@@ -6,11 +6,15 @@ import {useNavigate, useParams} from "react-router-dom";
 import ChipBox from "../../components/common/ChipBox";
 import Calendar from "../../components/common/Calendar";
 import api from "../../api/api";
+import Modal from "../../components/common/Modal";
+import {MODAL_INFO} from "../../util/const";
 
 const Write = () => {
 
     const navigate = useNavigate();
     const {id} = useParams();
+
+    const [isConfirmModal, setIsConfirmModal] = useState(MODAL_INFO);
 
     const [form, setForm] = useState({
     // {
@@ -84,7 +88,11 @@ const Write = () => {
             // 신규 등록
             api.post(`/study/save`, postData)
                 .then(function (response) {
-                    console.log(response)
+                    setIsConfirmModal({
+                        status: true,
+                        message: "등록이 완료되었습니다.",
+                        handleConfirm: () => navigate('/admin'),
+                    })
                 })
                 .catch(function (error) {
                     console.log("error", error);
@@ -211,6 +219,20 @@ const Write = () => {
                 </section>
                 {/*content_section end*/}
             </div>
+
+            {
+                isConfirmModal.status &&
+                <Modal
+                    title={"스터디 등록"}
+                    buttonList={[
+                        { text: "확인", handleClick: isConfirmModal.handleConfirm, className: "confirm" }
+                    ]}
+                    className={"confirm_modal"}>
+                    <div className="modal_message">
+                        { isConfirmModal?.message }
+                    </div>
+                </Modal>
+            }
         </Layout>
     );
 };

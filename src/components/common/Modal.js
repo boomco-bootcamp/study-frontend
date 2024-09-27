@@ -10,7 +10,7 @@ const Modal = (props) => {
     const {
         title,
         buttonList=[],
-        handleClose,
+        handleClose=null,
         className="",
         children
     } = props;
@@ -21,7 +21,7 @@ const Modal = (props) => {
             <div className="modal_box">
                 <div className="modal_header">
                     <h3 className={"title"}>{ title ?? "-" }</h3>
-                    <button onClick={handleClose}><DeleteIcon/></button>
+                    {handleClose && <button onClick={handleClose}><DeleteIcon/></button>}
                 </div>
                 <div className="modal_container">
                     {children}

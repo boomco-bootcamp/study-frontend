@@ -205,7 +205,7 @@ const Detail = () => {
                                 </>:
                                 <>
                                     <p>로그인을 통해 스터디 서비스를 사용해보세요</p>
-                                    <button className={"button"} onClick={handleApply}>LOGIN</button>
+                                    <button className={"button"} onClick={() => navigate("/login")}>LOGIN</button>
                                 </>
                         }
                     </section>
