@@ -663,6 +663,13 @@
     font-size: 14px;
 }
 
+
+/*confirm, alert*/
+.modal_message {
+    text-align: center;
+    padding: 20px 0;
+}
+
 /*Calendar*/
 .calendar_wrap {
     border: 1px solid #b1b1b1;

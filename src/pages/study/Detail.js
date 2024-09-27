@@ -5,9 +5,10 @@ import {studyList, studyReplyList} from "../../data/study";
 import Reply from "../../components/common/Reply";
 import {useUser} from "../../context/UserContext";
 import Badge from "../../components/common/Badge";
-import {STATUS_DATA} from "../../util/const";
+import {MODAL_INFO, STATUS_DATA} from "../../util/const";
 import api from "../../api/api";
 import {format} from "date-fns";
+import Modal from "../../components/common/Modal";
 
 const Detail = () => {
 
@@ -18,6 +19,8 @@ const Detail = () => {
 
     const [contentData, setContentData] = useState({});
     const [replyData, setReplyData] = useState({});
+
+    const [isConfirmModal, setIsConfirmModal] = useState(MODAL_INFO);
 
     //
     const handleGetDetail = () => {
@@ -185,7 +188,20 @@ const Detail = () => {
                                 </> :
                                 <>
                                     <p>스터디를 신청하여 갓생러가 되어보세요~!</p>
-                                    <button className={"button linear"}>신청하기</button>
+                                    <button
+                                        className={"button linear"}
+                                        onClick={() => setIsConfirmModal({
+                                            status: true,
+                                            message: "해당 스터디를 신청하시겠습니까?",
+                                            handleConfirm: () => {},
+                                            handleCancel: () => {
+                                                console.log("cancel !!!")
+                                                setIsConfirmModal(MODAL_INFO)
+                                            }
+                                        })}
+                                    >
+                                        신청하기
+                                    </button>
                                 </>:
                                 <>
                                     <p>로그인을 통해 스터디 서비스를 사용해보세요</p>
@@ -195,6 +211,21 @@ const Detail = () => {
                     </section>
                     {/*apply_section end*/}
                 </div>
+            }
+            {
+                isConfirmModal.status &&
+                <Modal
+                    title={"스터디 신청"}
+                    buttonList={[
+                        { text: "취소", handleClick: isConfirmModal.handleCancel, className: "cancel" },
+                        { text: "확인", handleClick: isConfirmModal.handleConfirm, className: "confirm" }
+                    ]}
+                    handleClose={isConfirmModal?.handleCancel}
+                    className={"confirm_modal"}>
+                    <div className="modal_message">
+                        { isConfirmModal?.message }
+                    </div>
+                </Modal>
             }
         </Layout>
     );

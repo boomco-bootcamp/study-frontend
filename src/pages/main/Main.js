@@ -67,7 +67,6 @@ const Main = () => {
 
         // @INFO 추후 API set
         if(studyList?.length > 0) {
-
             const recentListData = studyList.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
             console.log(recentListData);
             // const hotListData = studyList.sort((a, b) => b.like - a.like);
@@ -146,7 +145,7 @@ const Main = () => {
                                </div> :
                                 <div className={"request_login"}>
                                     <p className="main_text">회원가입을 하면 더 많은 스터디를 볼 수 있어요!</p>
-                                    <Link to={"/"}>회원가입하러 가기 →</Link>
+                                    <Link to={"/signup"}>회원가입하러 가기 →</Link>
                                 </div>
                         }
                         <ChipBox

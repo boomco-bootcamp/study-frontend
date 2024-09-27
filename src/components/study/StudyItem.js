@@ -12,11 +12,12 @@ const StudyItem = ({data}) => {
         <div
             className={"study_item"}
             onClick={() => {
-                if(!user || !user?.userIdx) {
-                    alert("로그인이 필요한 서비스입니다.")
-                } else {
-                    navigate(`/study/detail/${data?.stdyId}`)
-                }
+                // if(!user || !user?.userIdx) {
+                //     alert("로그인이 필요한 서비스입니다.")
+                // } else {
+                //     navigate(`/study/detail/${data?.stdyId}`)
+                // }
+                navigate(`/study/detail/${data?.stdyId}`)
             }}
         >
             <div className="title_section">

@@ -22,3 +22,10 @@ export const COMM_FILTER = {
     reply: "댓글많은순"
 }
 
+// 기본 confirm, alert 모달
+export const MODAL_INFO = {
+    message: "",
+    status: false,
+    handleConfirm: () => {},
+    handleCancel: () => {}
+}

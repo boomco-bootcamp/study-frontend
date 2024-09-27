@@ -11,7 +11,8 @@ const ListSection = ({ title, link, children, customHeader }) => {
                     customHeader() :
                     <div className="list_section_header">
                         <h3>{title}</h3>
-                        { (user && user.userIdx && link) && <Link to={link}>→</Link> }
+                        <Link to={link}>→</Link>
+                        {/*{ (user && user.userIdx && link) && <Link to={link}>→</Link> }*/}
                     </div>
             }
             <div className="list_section_content">

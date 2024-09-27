@@ -9,14 +9,16 @@ function Layout({children}) {
     const {login, user, logout} = useUser();
     const location = useLocation();
     const navigate = useNavigate();
-    const allowUrls = ["/", "/login", "/signup", "findPw"];
+    const allowUrls = ["/", "/login", "/signup", "findPw", "study/detail"];
 
     useEffect(() => {
         if(!user || !user?.userIdx) {
             // @INFO 새로고침시 user 초기화 방지를 위해 localStorage 체크를 한번 더 해준다.
             if(!JSON.parse(localStorage.getItem("user"))?.userIdx) {
                 if (!allowUrls.includes(location.pathname)) {
-                    navigate("/", { replace: true }); // "/"로 리다이렉트
+                    if(!location.pathname.startsWith("/study")) {
+                        navigate("/", { replace: true });
+                    }
                 }
             }
         }

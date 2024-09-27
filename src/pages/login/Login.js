@@ -93,11 +93,11 @@ const Login = () => {
                         <span className='tit_name'>소셜 로그인</span>
                     </div>
                     <ul className='social_menu'>
-                        <li className='social_item'>
-                            <button  className='link google'>
-                                <span className="visually-hidden">구글로 로그인</span>
-                            </button>
-                        </li>
+                        {/*<li className='social_item'>*/}
+                        {/*    <button  className='link google'>*/}
+                        {/*        <span className="visually-hidden">구글로 로그인</span>*/}
+                        {/*    </button>*/}
+                        {/*</li>*/}
                         <li className='social_item'>
                             <button className='link kakao'>
                                 <span className="visually-hidden">카카오로 로그인</span>

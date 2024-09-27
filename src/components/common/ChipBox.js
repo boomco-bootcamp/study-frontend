@@ -39,16 +39,12 @@ const ChipBox = (props) => {
                 return false;
             }
         }
-        console.log("123123123 ", input)
         // 등록
         handleSetData && handleSetData(input);
         setInput("");
         inputRef.current.focus();
     }
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
 
     return(
         <div className={"chip_wrap"}>
