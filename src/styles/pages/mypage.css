@@ -1,0 +1,225 @@
+
+.my_page {
+    padding-top: 50px;
+}
+
+.my_page .welcome_message {
+    position: relative;
+    margin-bottom: 50px;
+}
+
+.my_page .welcome_message .btn_account {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 1;
+    font-size: 13px;
+    color: #007bff;
+}
+
+.my_page .welcome_message .text {
+    font-size: 22px;
+    text-align: center;
+}
+
+.my_page .welcome_message .text .name {
+    color: #007bff;
+    font-size: inherit;
+}
+
+/*apply_study_section*/
+.apply_study_section .apply_study_item {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid #d5d5d5;
+}
+
+.apply_study_section .apply_study_item .title_section {
+    position: relative;
+}
+
+.apply_study_section .apply_study_item:last-child,
+.apply_study_section .apply_study_item .study_item {
+    border-bottom: 0 none;
+}
+
+.apply_study_section .apply_study_item .study_item {
+    position: relative;
+}
+
+.apply_study_section .apply_study_item .study_item:after {
+    content: "";
+    width: 1px;
+    height: 85%;
+    z-index: 0;
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background: #d5d5d5;
+}
+
+.apply_study_section .apply_study_item .button_group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    position: relative;
+    min-width: 140px;
+}
+
+.apply_study_section .apply_study_item .badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
+}
+
+.my_page .category_tag_section {
+    display: flex;
+    gap: 30px;
+    margin: 45px 0;
+}
+
+
+.my_page .like_category_section,
+.my_page .like_tag_section {
+    flex: 1;
+}
+
+.apply_study_section .apply_study_item .button {
+    font-size: 12px;
+    word-break: keep-all;
+    margin: 0 12px 12px 0;
+}
+
+/*like_study_section*/
+.like_study_section .like_study_item {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid #d5d5d5;
+}
+
+
+.like_study_section .like_study_item:last-child,
+.like_study_section .study_item {
+    border-bottom: 0 none;
+}
+
+.like_study_section .like_study_item .button_group {
+    padding: 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.like_study_section .like_study_item .button_group .like {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    transition: 0.3s ease-in;
+    font-size: 22px;
+}
+
+.like_study_section .like_study_item .button_group .like:hover {
+    background: rgba(0,0,0,0.1);
+}
+
+/*category_setting_popup*/
+.category_setting_popup .category_item {
+    padding: 4px 0;
+}
+
+.category_setting_popup .category_item .checkbox {
+    cursor: pointer;
+}
+
+.category_setting_popup .category_item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/*admin_page*/
+.admin_page .category_setting_wrap {
+    padding-top: 50px;
+}
+
+.admin_page .study_setting_wrap {
+    margin-top: 50px;
+}
+
+.admin_page .study_setting_wrap .apply_study_item {
+    display: flex;
+}
+
+.admin_page .study_setting_wrap .apply_study_item:last-child .study_item {
+    border-bottom: 0 none;
+}
+
+.admin_page .study_setting_wrap .button_list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 140px;
+    padding: 0 12px;
+}
+
+.admin_page .study_setting_wrap .button_group {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.admin_page .study_setting_wrap .button_list .button {
+    width: 100%;
+    font-size: 13px;
+}
+
+/*apply_participant_wrap*/
+.apply_participant_wrap .apply_participant_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+}
+
+.apply_participant_wrap .apply_participant_item:last-child {
+    border-bottom: 0 none;
+}
+
+
+.apply_participant_wrap .apply_participant_item .name {
+    flex: 1;
+}
+
+.apply_participant_wrap .apply_participant_item button {
+    font-size: 14px;
+    width: 78px;
+}
+
+/*study_write_page*/
+.study_write_page .tag_list_wrap {
+    position: relative;
+}
+.study_write_page .tag_list_wrap .notice {
+    margin-top: 12px;
+    font-size: 14px;
+    text-align: right;
+}
+
+.study_write_page .chip_wrap {
+    min-height: 160px;
+}
+
+.study_write_page .term_wrap {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.study_write_page .term_wrap .calendar_wrap {
+    flex: 1;
+}

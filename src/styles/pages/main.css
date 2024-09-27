@@ -1,0 +1,86 @@
+
+/*main*/
+.main {
+}
+
+.main .banner_wrap {
+    border-bottom: 1px solid #000;
+}
+
+.main .banner_wrap .banner_item {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.main .banner_wrap .banner_item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.main .banner_wrap .swiper-wrapper .swiper-slide {
+    width: 100%;
+    height: 750px;
+}
+
+.main .content {
+    padding-top: 80px;
+}
+
+.main .study_box {
+    display: flex;
+    gap: 20px;
+}
+
+.main .chip_wrap {
+    width: 300px;
+}
+
+.main .recommend_box {
+    display: flex;
+    margin-top: 80px;
+    gap: 60px;
+}
+
+.main .recommend_box .recommend_list,
+.main .recommend_box .request_login {
+    flex: 1;
+}
+
+.main .recommend_box .request_login {
+    border: 1px solid #d5d5d5;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    min-height: 260px;
+}
+
+.main .recommend_box .request_login .main_text {
+    font-size: 18px;
+}
+
+.main .recommend_box .request_login a {
+    color: #007bff;
+    transition: 0.3s ease-in;
+}
+
+.main .recommend_box .request_login a:hover,
+.main .recommend_box .request_login a:focus,
+.main .recommend_box .request_login a:active {
+    font-weight: bold;
+}
+
+.main .recommend_box .notice {
+    font-size: 22px;
+    font-weight: 600;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #d5d5d5;
+
+
+}
+
+

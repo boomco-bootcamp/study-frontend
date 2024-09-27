@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+@import "./common/reset.css";
+@import "./common/global.css";
+@import "./common/component.css";
+@import "./common/custom.css";
+@import "./common/layout.css";
+
+@import "./pages/main.css";
+@import "./pages/study.css";
+@import "./pages/community.css";
+@import "./pages/mypage.css";
+@import "./pages/sign.css";

@@ -1,0 +1,115 @@
+
+.wrap {
+    position: relative;
+}
+
+/* header*/
+.header {
+    width: 100%;
+    background: #fff;
+    padding: 0 20px;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .logo img {
+    height: 40px;
+    display: inline-block;
+}
+
+.header .right_section {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+}
+
+.header .search {
+    display: inline-flex;
+    gap: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.header .search .button {
+    border-radius: 0;
+}
+
+.header .button:last-child {
+    margin-right: 0;
+}
+
+.header .user_menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header .user_menu .button_alarm.active svg {
+    stroke: #007bff;
+}
+
+.header .user_menu .alarm_wrap {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 10;
+    width: 380px;
+    height: 200px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    overflow-y: auto;
+    box-shadow: 0 0 8px 12px rgba(0,0,0,0.1);
+}
+
+.header .user_menu .alarm_item {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .user_menu .alarm_item .text {
+    font-size: 14px;
+    line-height: 1.2;
+    word-break: keep-all;
+}
+
+.header .user_menu .alarm_item .date {
+    font-size: 12px;
+    color: #838383;
+}
+
+.header .user_menu .alarm_item .button {
+    font-size: 12px;
+    width: 75px;
+    min-width: 75px;
+    height: 28px;
+    border-radius: 45px;
+}
+
+
+/*page*/
+.page_wrap {
+
+}
+
+
+/*footer*/
+.footer {
+    text-align: center;
+    border-top: 1px solid #d5d5d5;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 30px 0 60px 0;
+    margin-top: 100px;
+}
