@@ -661,6 +661,7 @@
 
 .modal .modal_box .modal_footer button {
     font-size: 14px;
+    min-width: 70px;
 }
 
 

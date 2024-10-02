@@ -91,6 +91,12 @@ const Main = () => {
                             link={"/study"}
                         >
                             {
+                                recentList?.length <= 0 &&
+                                <div className={"no_result"}>
+                                    최신 스터디가 없습니다.
+                                </div>
+                            }
+                            {
                                 recentList?.map((item, idx) => (
                                     (idx < 4) &&
                                     <StudyItem
@@ -104,6 +110,12 @@ const Main = () => {
                             title={"인기 스터디"}
                             link={"/study"}
                         >
+                            {
+                                hotList?.length <= 0 &&
+                                <div className={"no_result"}>
+                                    인기 스터디가 없습니다.
+                                </div>
+                            }
                             {
                                 hotList?.map((item, idx) => (
                                     (idx < 4) &&
@@ -148,10 +160,13 @@ const Main = () => {
                                     <Link to={"/signup"}>회원가입하러 가기 →</Link>
                                 </div>
                         }
-                        <ChipBox
-                            title={"인기 태그"}
-                            data={tagList}
-                        />
+                        {
+                            tagList?.length > 0 &&
+                            <ChipBox
+                                title={"인기 태그"}
+                                data={tagList}
+                            />
+                        }
                     </section>
                 </div>
             </div>

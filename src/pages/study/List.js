@@ -21,7 +21,8 @@ const List = () => {
     const [searchValue, setSearchValue] = useState({
         category: "all",
         input: "",
-        status: "all" // all + STATUS_DATA
+        status: "all", // all + STATUS_DATA
+        page: 1,
     });
     const [studyDataList, setStudyDataList] = useState([]);
     const [hotTagDataList, setHotTagDataList] = useState([]);
@@ -65,15 +66,21 @@ const List = () => {
                 params: {
                     searchCon: searchValue?.input ?? "",
                     orderType: "desc",
-                    page: page,
+                    page: searchValue.page,
                     record: 10
                 }
             })
             .then(function (response) {
                 setStudyDataList(response.data.list);
                 setPaging({
-                    ...paging,
+                    next: response.data.next,
                     endPage: response.data.endPage,
+                    page: response.data.page,
+                    prev: response.data.prev,
+                    record: response.data.record,
+                    startPage: response.data.startPage,
+                    total: response.data.total,
+                    totalPage: response.data.totalPage,
                 })
             })
             .catch(function (error) {
@@ -96,8 +103,11 @@ const List = () => {
             })
     }
 
-    const handlePaging = async (param) => {
-        console.log(param);
+    const handlePaging = (param) => {
+        setSearchValue({
+            ...searchValue,
+            page: param.page
+        })
     }
 
     useEffect(() => {
@@ -177,7 +187,12 @@ const List = () => {
                                         />
                                     ))
                                 }
-                                <Paging pagingData={paging} handlePaging={handlePaging} />
+                                {
+                                    paging.page > 0 &&
+                                    <Paging
+                                        pagingData={paging}
+                                        handlePaging={handlePaging} />
+                                }
                             </div>
                             {
                                 hotTagDataList &&

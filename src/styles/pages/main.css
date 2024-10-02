@@ -33,6 +33,12 @@
     gap: 20px;
 }
 
+.main .study_box .no_result {
+    margin-top: 0;
+    min-height: 150px;
+    height: 100%;
+}
+
 .main .chip_wrap {
     width: 300px;
 }

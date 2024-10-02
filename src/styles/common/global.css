@@ -85,3 +85,9 @@ a {
     background: #000;
     transition: all 0.3s;
 }
+
+/*require*/
+.require:after {
+    content: "*";
+    color: #ff0000 !important;
+}
