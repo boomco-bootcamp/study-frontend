@@ -6,7 +6,7 @@ import Reply from "../../components/common/Reply";
 import {useUser} from "../../context/UserContext";
 import Badge from "../../components/common/Badge";
 import {MODAL_INFO, STATUS_DATA} from "../../util/const";
-import api from "../../api/api";
+import Axios from "../../api/api";
 import {format} from "date-fns";
 import Modal from "../../components/common/Modal";
 
@@ -24,7 +24,7 @@ const Detail = () => {
 
     //
     const handleGetDetail = () => {
-        api.get(`/study/detail`, {
+        Axios.get(`/study/detail`, {
             params: {
                 stdyId: id,
             }

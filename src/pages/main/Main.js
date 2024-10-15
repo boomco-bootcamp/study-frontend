@@ -11,8 +11,7 @@ import StudyItem from "../../components/study/StudyItem";
 import {Link} from "react-router-dom";
 import ChipBox from "../../components/common/ChipBox";
 // api
-import api from '../../api/api'
-import axios from 'axios'
+import Axios from '../../api/api'
 
 
 const Main = () => {
@@ -27,24 +26,27 @@ const Main = () => {
 
     const temp_user_category = ["프론트엔드", "모바일 앱 개발"]; // 임시 데이터 "프론트엔드", "모바일 앱 개발"
 
-    const handleGetStudyData = async () => {
-            api.get(`/study/list`, {
+    const handleGetStudyData = async (orderType, setFunction) => {
+            return await Axios.get(`/study/list`, {
                 params: {
-                    orderType: "desc",
+                    orderType: orderType,
                     page: 1,
                     record: 10
                 }
             })
             .then(function (response) {
-                setStudyList(response.data.list)
-            })
+                    // setStudyList(response.data.list)
+                    setFunction(response.data.list)
+                }
+
+            )
             .catch(function (error) {
                 console.log("error", error);
             })
     }
 
     const handleGetTagList = async () => {
-            api.get(`/tag/list/favorite`)
+            Axios.get(`/tag/list/favorite`)
             .then(function (response) {
                 // handle success
                 let tagData = [];
@@ -57,26 +59,21 @@ const Main = () => {
             })
     }
 
-
     useEffect(() => {
-        handleGetStudyData();
+        // handleGetStudyData();
         handleGetTagList();
+        handleGetStudyData("desc", setRecentList)
+        handleGetStudyData("like", setHotList)
     }, [])
 
     useEffect(() => {
-
         // @INFO 추후 API set
         if(studyList?.length > 0) {
-            const recentListData = studyList.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
-            console.log(recentListData);
-            // const hotListData = studyList.sort((a, b) => b.like - a.like);
-            // const categoryListData = studyList.filter(item =>
-            //     // item?.categoryList?.some(category => temp_user_category.includes(category.title))
-            //     temp_user_category.includes(item?.category?.title)
-            // );
-            setRecentList(recentListData);
-            // setHotList(hotListData);
-            // setCategoryList(categoryListData);
+            const categoryListData = studyList.filter(item =>
+                // item?.categoryList?.some(category => temp_user_category.includes(category.title))
+                temp_user_category.includes(item?.category?.title)
+            );
+            setCategoryList(categoryListData);
         }
     }, [studyList])
 

@@ -11,7 +11,7 @@ import Paging from "../../components/common/Paging";
 import {useUser} from "../../context/UserContext";
 import ChipBox from "../../components/common/ChipBox";
 import {useParams} from "react-router-dom";
-import api from "../../api/api";
+import Axios from "../../api/api";
 
 const List = () => {
     const {user} = useUser();
@@ -47,7 +47,7 @@ const List = () => {
     }
 
     const handleGetTagList = async () => {
-        api.get(`/tag/list/favorite`)
+        Axios.get(`/tag/list/favorite`)
             .then(function (response) {
                 // handle success
                 let tagData = [];
@@ -62,7 +62,7 @@ const List = () => {
 
     const handleSearchData = async (page=1) => {
         // 추후 검색 api 호출
-        api.get(`/study/list`, {
+        Axios.get(`/study/list`, {
                 params: {
                     searchCon: searchValue?.input ?? "",
                     orderType: "desc",
@@ -90,7 +90,7 @@ const List = () => {
 
     const handleGetCategory = async () => {
         // 추후 검색 api 호출
-        api.get(`/category/list/all`)
+        Axios.get(`/category/list/all`)
             .then(function (response) {
                 const categorySelect = response.data.map((cat, index) => ({
                     id: cat.stdyCatId,

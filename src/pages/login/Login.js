@@ -1,24 +1,8 @@
 import { useUser } from '../../context/UserContext';
+import { getUserInfo } from '../../api/user';
+import { postSignIn } from '../../api/auth';
 import React, {useEffect, useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
-
-// 일반회원 테스트 계정
-// {
-//     name: "최지훈",
-//         userId: "choijh83",
-//     userIdx: 321321,
-//     loginStatus: true,
-//     type: "user"
-// }
-
-// 관리자 테스트 계정
-// {
-//     name: "관리자",
-//         userId: "admin",
-//     userIdx: 100001,
-//     loginStatus: true,
-//     type: "admin"
-// }
 
 const Login = () => {
     const navigate = useNavigate();
@@ -30,16 +14,31 @@ const Login = () => {
 
     const handleChangeInput = (e) => {
         setFormData({
+            ...formData,
             [e.target.name]: e.target.value
         })
     }
 
-    const handleClickLogin = (e) => {
-        e.preventDefault();
-        setFormData({
-            id: "test",
-            pw: "test123"
-        })
+    const handleClickLogin = async (e) => {
+        if(formData.id && formData.pw) {
+            try {
+                const res = await postSignIn({
+                    userId : formData.id,
+                    userPswd : formData.pw
+                })
+
+                localStorage.setItem("authToken", res.data);
+                const userInfo = await getUserInfo()
+                login({
+                    userId: formData.id,
+                    userPswd: formData.pw,
+                    userNm: userInfo.data.userNm
+                })
+                window.location.href = '/'
+            } catch (err) {
+                alert("아이디 혹은 비밀번호를 확인해주세요")
+            }
+        }
     }
 
     useEffect(() => {
@@ -48,7 +47,7 @@ const Login = () => {
 
     return (
         <div className='login_form'>
-            <form className='flex-col flex-center login_wrapper' onSubmit={handleClickLogin}>
+            <form className='flex-col flex-center login_wrapper'>
                 <h1 className='login_tit'>Login</h1>
                 <div className='input_wrap'>
                     <label htmlFor='id' className='form_label'>아이디</label>
@@ -66,18 +65,9 @@ const Login = () => {
                         <Link to='/signup'>회원가입</Link>
                     </li>
                 </ul>
-                <button type="submit" className="btn_submit"
-                        onClick={() => login({
-                            name: "최지훈",
-                            userId: "choijh83",
-                            userIdx: 321321,
-                            loginStatus: true,
-                            type: "user"
-                        })}
-                >
-                    로그인
-                </button>
-                <button type="submit" className="btn_submit"
+                <button type="button" className="btn_submit" onClick={handleClickLogin}>로그인</button>
+
+                <button type="button" className="btn_submit"
                         onClick={() => login({
                             name: "관리자",
                             userId: "admin",
@@ -93,11 +83,6 @@ const Login = () => {
                         <span className='tit_name'>소셜 로그인</span>
                     </div>
                     <ul className='social_menu'>
-                        {/*<li className='social_item'>*/}
-                        {/*    <button  className='link google'>*/}
-                        {/*        <span className="visually-hidden">구글로 로그인</span>*/}
-                        {/*    </button>*/}
-                        {/*</li>*/}
                         <li className='social_item'>
                             <button className='link kakao'>
                                 <span className="visually-hidden">카카오로 로그인</span>

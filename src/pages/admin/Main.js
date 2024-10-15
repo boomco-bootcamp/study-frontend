@@ -9,7 +9,7 @@ import ListSection from "../../components/common/ListSection";
 import {useNavigate, Link} from "react-router-dom";
 import Modal from "../../components/common/Modal";
 import {PlusIcon} from "../../assets/icons/Icon";
-import api from "../../api/api";
+import Axios from "../../api/api";
 
 const Main = () => {
     const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Main = () => {
     // category
     const handleGetCategory = async () => {
         // 추후 검색 api 호출
-        api.get(`/category/list/all`)
+        Axios.get(`/category/list/all`)
             .then(function (response) {
                 const categorySelect = response.data.map((cat, index) => ({
                     id: cat.stdyCatId,
@@ -60,7 +60,7 @@ const Main = () => {
             })
     }
     const handleSetCategory = (data) => {
-        api.post(`/category/save`, {
+        Axios.post(`/category/save`, {
             stdyCatNm: data
         })
             .then( (response)  => {

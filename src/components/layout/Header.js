@@ -44,7 +44,7 @@ const Header = ({ user, handleLogin, handleLogout }) => {
                 </div>
                 <div className="user_menu">
                     {
-                        (user?.userIdx) ?
+                        (user?.userId) ?
                             <>
                                 <button
                                     className={"button linear"}

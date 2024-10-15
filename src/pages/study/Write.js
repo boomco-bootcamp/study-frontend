@@ -5,7 +5,7 @@ import {useNavigate, useParams} from "react-router-dom";
 // import {categoryList, studyList} from "../../data/study";
 import ChipBox from "../../components/common/ChipBox";
 import Calendar from "../../components/common/Calendar";
-import api from "../../api/api";
+import Axios from "../../api/api";
 import Modal from "../../components/common/Modal";
 import {MODAL_INFO} from "../../util/const";
 
@@ -60,7 +60,7 @@ const Write = () => {
     }
     const handleGetCategory = async () => {
         // 추후 검색 api 호출
-        api.get(`/category/list/all`)
+        Axios.get(`/category/list/all`)
             .then(function (response) {
                 const categorySelect = response.data.map((cat, index) => ({
                     id: cat.stdyCatId,
@@ -86,7 +86,7 @@ const Write = () => {
             // 수정
         } else {
             // 신규 등록
-            api.post(`/study/save`, postData)
+            Axios.post(`/study/save`, postData)
                 .then(function (response) {
                     setIsConfirmModal({
                         status: true,

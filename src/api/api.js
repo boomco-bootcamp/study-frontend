@@ -1,42 +1,36 @@
 import axios from 'axios';
 
 // Axios 인스턴스 생성
-const api = axios.create({
+const Axios = axios.create({
     baseURL: process.env.REACT_APP_API_URL, // 환경 변수에서 API URL 가져오기
     timeout: 10000, // 요청 제한 시간 설정 (10초)
     headers: {
-        'Content-Type': 'application/json', // 기본 헤더 설정
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     },
+    withCredentials: false,
 });
 
-// 요청 인터셉터 설정 (API 호출 전 공통 처리)
-// api.interceptors.request.use(
-//     (config) => {
-//         // 토큰이 필요한 경우, 여기서 설정
-//         const token = localStorage.getItem('token');
-//         if (token) {
-//             config.headers.Authorization = `Bearer ${token}`;
-//         }
-//         return config;
-//     },
-//     (error) => {
-//         return Promise.reject(error);
-//     }
-// );
+Axios.interceptors.request.use(
+    (config) => {
+        // 로컬 스토리지에서 토큰을 가져옴
+        const token = localStorage.getItem('authToken');
 
-// 응답 인터셉터 설정 (API 응답 후 공통 처리)
-api.interceptors.response.use(
-    (response) => {
-        return response;
+        // 토큰이 있으면 Authorization 헤더에 추가
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
     },
     (error) => {
-        // 에러 처리 (예: 401 Unauthorized 처리)
-        // if (error.response && error.response.status === 401) {
-        //     // 로그아웃 처리 또는 리다이렉트
-        //     window.location.href = '/login';
-        // }
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('userInfo')
         return Promise.reject(error);
+
     }
 );
 
-export default api;
+export default Axios;
