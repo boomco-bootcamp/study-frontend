@@ -45,7 +45,7 @@ const Main = () => {
             })
     }
 
-    const handleGetTagList = async () => {
+    const getTagList = async () => {
             Axios.get(`/tag/list/favorite`)
             .then(function (response) {
                 // handle success
@@ -59,23 +59,33 @@ const Main = () => {
             })
     }
 
-    useEffect(() => {
-        // handleGetStudyData();
-        handleGetTagList();
-        handleGetStudyData("desc", setRecentList)
-        handleGetStudyData("like", setHotList)
-    }, [])
+    const getlikeStudyList = async () => {
+        await Axios.get('/my/like/list')
+            .then(function (res) {
+                setStudyList(res.data.list)
+            })
+            .catch(function (err) {
+                console.error("err", err)
+            })
+    }
 
     useEffect(() => {
-        // @INFO 추후 API set
-        if(studyList?.length > 0) {
-            const categoryListData = studyList.filter(item =>
-                // item?.categoryList?.some(category => temp_user_category.includes(category.title))
-                temp_user_category.includes(item?.category?.title)
-            );
-            setCategoryList(categoryListData);
-        }
-    }, [studyList])
+        getTagList();
+        handleGetStudyData("desc", setRecentList)
+        handleGetStudyData("like", setHotList)
+        getlikeStudyList();
+    }, [])
+
+    useEffect( () => {
+        Axios.get(`/my/category/list`)
+            .then(function (response) {
+                setCategoryList(response.data.list)
+                }
+            )
+            .catch(function (error) {
+                console.log("error", error);
+            })
+    }, [user])
 
     return (
         <Layout>
@@ -127,17 +137,17 @@ const Main = () => {
 
                     <section className="recommend_box">
                         {
-                            (user.name) ?
+                            (user.userNm) ?
                                 <div className={"recommend_list"}>
                                     {
-                                        (categoryList?.length > 0) ?
+                                        (studyList?.length > 0) ?
                                             <>
                                                 <p className="notice">
-                                                    ✨ {user.name}님이 관심있는 카테고리에 매칭 되는 스터디예요 👀
-                                                    ({temp_user_category?.map((category, idx) => <span key={`user_category_${idx}`}>#{category}</span>)})
+                                                    ✨ {user.userNm}님이 관심있어하는 스터디예요 👀
+                                                    {/*({temp_user_category?.map((category, idx) => <span key={`user_category_${idx}`}>#{category}</span>)})*/}
                                                 </p>
                                                 {
-                                                    categoryList.map((item, idx) => (
+                                                    studyList.map((item, idx) => (
                                                         (idx < 4) &&
                                                         <StudyItem
                                                             key={idx}
@@ -145,11 +155,12 @@ const Main = () => {
                                                         />
                                                     ))
                                                 }
-                                            </>:
-                                            <div className={"request_login"}>
-                                                <p className="main_text">마이페이지에서 관심 카테고리를 설정할 수 있어요!</p>
-                                                <Link to={"/mypage"}>관심 카테고리 설정하러 가기 →</Link>
-                                            </div>
+                                            </>
+                                        :
+                                        <div className={"request_login"}>
+                                            <p className="main_text">마이페이지에서 관심 카테고리를 설정할 수 있어요!</p>
+                                            <Link to={"/mypage"}>관심 카테고리 설정하러 가기 →</Link>
+                                        </div>
                                     }
                                </div> :
                                 <div className={"request_login"}>

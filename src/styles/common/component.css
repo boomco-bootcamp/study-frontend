@@ -99,7 +99,7 @@
 
 .chip_wrap .chip_header .input_wrap {
     background: #e9e8e8;
-    padding: 8px 8px 8px 15px;
+    /*padding: 8px 8px 8px 15px;*/
     border-radius: 45px;
     display: inline-flex;
     flex-direction: row;
@@ -110,7 +110,7 @@
 
 .chip_wrap .chip_header .input_wrap input {
     background: transparent;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .chip_wrap .chip {

@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {DeleteIcon, PlusIcon} from "../../assets/icons/Icon";
 import {likeTagList} from "../../data/mypage";
 
@@ -12,7 +12,8 @@ const ChipBox = (props) => {
         handleSetData,
         handleDelete,
         handleAddCustom=()=>{},
-        maxLength=0
+        maxLength=0,
+        nodataMessage = ""
     } = props;
 
     const inputRef = useRef();
@@ -68,20 +69,26 @@ const ChipBox = (props) => {
                     (type === "plus") && <button onClick={handleAddCustom}><PlusIcon/></button>
                 }
             </div>
-            <div className="chip_list">
-                {
-                    data?.map((item, idx) => (
-                        (mode === "view") ?
-                            <button className={"chip"} key={`${item}_${idx}`}>
-                                {item}
-                            </button> :
-                            <li className={"chip"} key={`${item.id}`}>
-                                {item.title}
-                                <button onClick={() => handleDelete(item.id)}><DeleteIcon/></button>
-                            </li>
-                    ))
-                }
-            </div>
+            {
+                data?.length > 0 ?
+                    <div className="chip_list">
+                        {
+                            data.map((item, idx) => (
+                                (mode === "view") ?
+                                    <button className={"chip"} key={`${item}_${idx}`}>
+                                        {item}
+                                    </button> :
+                                    <li className={"chip"} key={`${item.id}`}>
+                                        {item.title}
+                                        <button onClick={() => handleDelete(item.id)}><DeleteIcon/></button>
+                                    </li>
+                            ))
+                        }
+                    </div>
+                    : <div className="apply_study_item" style={{placeContent: 'center'}}>
+                        <div style={{padding: '50px', textAlignLast: 'center'}}>{nodataMessage}</div>
+                    </div>
+            }
         </div>
     )
 }
