@@ -12,9 +12,9 @@ function Layout({children}) {
     const allowUrls = ["/", "/login", "/signup", "findPw", "study/detail"];
 
     useEffect(() => {
-        if(!user) {
+        if(!user?.loginStatus) {
             // @INFO 새로고침시 user 초기화 방지를 위해 localStorage 체크를 한번 더 해준다.
-            if(!JSON.parse(localStorage.getItem("user"))?.userId) {
+            if(!JSON.parse(localStorage.getItem("user"))?.loginStatus) {
                 if (!allowUrls.includes(location.pathname)) {
                     if(!location.pathname.startsWith("/study")) {
                         navigate("/", { replace: true });

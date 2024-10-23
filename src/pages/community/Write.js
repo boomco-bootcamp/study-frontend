@@ -41,7 +41,7 @@ const Write = () => {
         const targetData = communityList.filter(item => item.id === parseInt(commId))?.[0];
         setForm({
             id: commId,
-            postType: targetData.postType ?? "free",
+            postType: targetData?.postType ?? "free",
             title: targetData?.title ?? "",
             content: targetData?.content ?? "",
             fileList: targetData?.fileList

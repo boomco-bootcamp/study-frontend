@@ -5,10 +5,11 @@ import {useUser} from "../../context/UserContext";
 import {communityList, commReplyList} from "../../data/community";
 import {studyList, studyReplyList} from "../../data/study";
 import Badge from "../../components/common/Badge";
-import {COMMUNITY_TYPE, STATUS_DATA} from "../../util/const";
+import {COMMUNITY_TYPE, MODAL_INFO, STATUS_DATA} from "../../util/const";
 import Reply from "../../components/common/Reply";
 import Axios from "../../api/api";
 import dayjs from "dayjs";
+import Modal from "../../components/common/Modal";
 
 const Detail = () => {
 
@@ -19,55 +20,20 @@ const Detail = () => {
 
     const navigate = useNavigate();
 
-    console.log("stdyId -> ", stdyId);
+    // 공통
+    const [isModal, setIsModal] = useState(MODAL_INFO);
 
+    // 게시글
     const [data, setData] = useState(null);
-    const [studyData, setStudyData] = useState({});
-    const [contentData, setContentData] = useState({});
     const [prevData, setPrevData] = useState(null);
     const [nextData, setNextData] = useState(null);
-    const [replyData, setReplyData] = useState({});
+
+    // 댓글
+    const [replyData, setReplyData] = useState([]);
+    const [replyPage, setReplyPage] = useState({});
 
 
-    // 수정모드
-    // @Param type= edit(수정모드) || reply(대댓글) || reEdit(대댓글 수정)
-    const handleChangeMode = (targetId, type="edit") => {
-        let editModeData = [];
-        if(type === "edit") {
-            editModeData = replyData.replyList.map(item => item.idx === targetId ? ({
-                ...item,
-                isEdit: !item.isEdit
-            }) : item);
-        }
-        if(type === "reply") {
-            editModeData = replyData.replyList.map(item => item.idx === targetId ? ({
-                ...item,
-                isReply: !item.isReply,
-            }) : item);
-        }
-        setReplyData({
-            ...replyData,
-            replyList: editModeData
-        });
-    }
-
-    // 대댓글 수정 모드
-    const handleChangeReplyMode = (parentId, targetId) => {
-        console.log("parentId, targetId -> ", parentId, targetId);
-        const targetData = replyData.replyList.map(item => item.idx === parentId ? ({
-            ...item,
-            reReplyList: item.reReplyList?.map(re => re.idx === targetId ? ({
-                ...re,
-                isEdit: !re.isEdit,
-            }): re)
-        }) : item);
-
-        setReplyData({
-            ...replyData,
-            replyList: targetData
-        });
-    }
-
+    // 게시글
     const handleGetData = async () => {
         await Axios.get(`/community/detail?stdyComtId=${commId}`, )
             .then(function (response) {
@@ -78,69 +44,122 @@ const Detail = () => {
             })
     }
 
-    // useEffect(() => {
-    //     console.log("replyData -> ", replyData)
-    // }, [replyData])
+    // 댓글 목록 불러오기
+    const handleGetReplyData = async () => {
+        await Axios.get(`/comment/community/list?stdyComtId=${commId}`, )
+            .then(function (response) {
+                const newData = response.data?.list?.map(item => {
+                    const updatedItem = {
+                        ...item,
+                        isEdit: false,
+                    };
+                    if (item.stdyChildComCommentList) {
+                        updatedItem.stdyChildComCommentList = item.stdyChildComCommentList.map(subItem => ({
+                            ...subItem,
+                            isEdit: false,
+                        }));
+                    }
+                    return updatedItem;
+                });
+
+                setReplyData(newData);
+                setReplyPage({
+                    endPage: response.data?.endPage,
+                    next: response.data?.next,
+                    page: response.data?.page,
+                    prev: response.data?.prev,
+                    record: response.data?.record,
+                    startPage: response.data?.startPage,
+                    total: response.data?.total,
+                    totalPage: response.data?.totalPage,
+                })
+            })
+            .catch(function (error) {
+                console.log("error", error);
+            })
+    }
+    // 댓글 등록
+    const handleWriteReplyData = async (content, id=null) => {
+        if(content === "") {
+            // @todo modal 로 변경
+            alert("글을 입력하세요!");
+        } else {
+            let postData = {
+                stdyComtId: commId,
+                stdyComCommentCon: content
+            }
+            if(id) {
+                postData = {
+                    ...postData,
+                    stdyParentComCommentId: id
+                }
+            }
+
+            await Axios.post(`/comment/community/save`, postData)
+                .then(function (response) {
+                    handleGetReplyData();
+                })
+                .catch(function (error) {
+                    console.log("error", error);
+                })
+        }
+    }
+    // 댓글 삭제
+    const handleDeleteData = async (id) => {
+        await Axios.post(`/comment/community/delete`, {
+            stdyComCommentId: id
+        })
+        .then(function (response) {
+            handleGetReplyData();
+            setIsModal(MODAL_INFO);
+        })
+        .catch(function (error) {
+            console.log("error", error);
+        })
+    }
+
+
+    // 수정모드
+    // @Param type= edit(수정모드)
+    const handleChangeMode = (targetId, type="edit") => {
+        if(type === "edit") {
+            const updateList = replyData?.map(item => (item.stdyComCommentId === targetId) ? ({
+                ...item,
+                isEdit: !item.isEdit
+            }): item);
+            setReplyData(updateList);
+        }
+    }
+
+    // 대댓글 수정 모드
+    const handleChangeReplyMode = (parentId, targetId) => {
+        const updateData = replyData?.map(item => {
+            // 부모의 데이터 값이 일치하는지 확인
+            if (item.stdyComCommentId === parentId) {
+                if (item.stdyChildComCommentList) {
+                    const updatedList = item.stdyChildComCommentList.map(subItem => {
+                        if (subItem.stdyComCommentId === targetId) {
+                            return { ...subItem, isEdit: !subItem.isEdit };
+                        }
+                        return subItem;
+                    });
+
+                    return { ...item, stdyChildComCommentList: updatedList };
+                }
+            }
+            return item;
+        });
+        setReplyData(updateData);
+    }
+
 
     //@INFO 내용 세팅
     useEffect(() => {
         if(commId) {
-            handleGetData()
+            handleGetData();
+            handleGetReplyData();
         }
     }, [commId]);
-
-    //@INFO reply 내용 가져요기
-    // useEffect(() => {
-    //     if(commReplyList && commId) {
-    //         const replyData = commReplyList.filter(item => item.id === parseInt(commId));
-    //         if(replyData?.length > 0) {
-    //             const newData = replyData[0]?.replyList?.map(item => ({
-    //                 ...item,
-    //                 isEdit: false, // 수정모드
-    //                 isReply: false, // 대댓글상태
-    //                 reReplyList: item?.reReplyList?.map(re => ({
-    //                     ...re,
-    //                     isEdit: false // 대댓글 수정모드
-    //                 }))
-    //             }))
-    //             setReplyData({
-    //                 ...replyData[0],
-    //                 replyList: newData
-    //             });
-    //         } else {
-    //             setReplyData([]);
-    //         }
-    //     }
-    // }, [commReplyList, commId]);
-
-    // @INFO 이전, 다음 컨텐츠 찾기
-    // useEffect(() => {
-    //     if(communityList && commId) {
-    //         const findPrevNextData = (data, targetId) => {
-    //             let prevData = null;
-    //             let nextData = null;
-    //             const targetIndex = data.findIndex(item => item.id === parseInt(targetId));
-    //             if (targetIndex !== -1) {
-    //                 if (targetIndex > 0) {
-    //                     prevData = data[targetIndex - 1];
-    //                 }
-    //                 if (targetIndex < data.length - 1) {
-    //                     nextData = data[targetIndex + 1];
-    //                 }
-    //             }
-    //             setPrevData(prevData);
-    //             setNextData(nextData);
-    //         };
-    //
-    //         findPrevNextData(communityList, commId);
-    //     }
-    // }, [communityList, commId])
-
-    // useEffect(() => {
-    //     if(state?.id) {
-    //         setStudyData(state);
-    //     }
-    // }, [state])
 
 
     return (
@@ -203,6 +222,17 @@ const Detail = () => {
                                 user={user}
                                 handleChangeMode={handleChangeMode}
                                 handleChangeReplyMode={handleChangeReplyMode}
+                                parentId={commId}
+                                handleGetList={handleGetReplyData}
+                                handleWrite={handleWriteReplyData}
+                                handleDelete={(id) => setIsModal({
+                                    status: true,
+                                    message: "해당 스터디를 삭제하시겠습니까?",
+                                    buttonList: [
+                                        { text: "취소", handleClick: () => setIsModal(MODAL_INFO), className: "cancel" },
+                                        { text: "확인", handleClick: () => handleDeleteData(id), className: "confirm" }
+                                    ],
+                                })}
                             />
                         }
                     </section>
@@ -226,6 +256,18 @@ const Detail = () => {
                     </section>
                     {/*participant_section end*/}
                 </div>
+            }
+            {
+                isModal.status &&
+                <Modal
+                    title={""}
+                    buttonList={isModal?.buttonList}
+                    handleClose={isModal?.handleCancel}
+                    className={"confirm_modal"}>
+                    <div className="modal_message">
+                        { isModal?.message }
+                    </div>
+                </Modal>
             }
         </Layout>
     );

@@ -1,20 +1,27 @@
 import {useEffect, useState} from "react";
 import {useUser} from "../../context/UserContext";
+import dayjs from "dayjs";
 
-const Reply = ({data, user, handleChangeMode, handleChangeReplyMode}) => {
+const Reply = (props) => {
+    const {
+        data,
+        user,
+        handleChangeMode,
+        handleChangeReplyMode,
+        handleGetList,
+        handleWrite,
+        handleDelete
+    } = props;
 
-    const handleApplyReply = (text) => {
-        console.log("댓글 등록!", text);
+    const handleApplyReply = (text, id=null) => {
+        if(handleWrite) handleWrite(text, id);
     }
 
-    const handleApplyReReply = (text) => {
-        console.log("대 댓글 등록!", text);
-    }
 
     return(
         <div className={"reply_wrap"}>
             <div className="reply_form_wrap">
-                <div className={"reply_top"}>댓글 {data?.replyList?.length ?? 0}</div>
+                <div className={"reply_top"}>댓글 {data?.length ?? 0}</div>
                 <ReplyForm
                     handleRegister={handleApplyReply}
                 />
@@ -28,67 +35,69 @@ const Reply = ({data, user, handleChangeMode, handleChangeReplyMode}) => {
                 }
                 {
 
-                    data?.replyList?.map((reply, idx) => (
+                    data?.map((reply, idx) => (
                         // 댓글
-                        <div className="reply_item" key={`reply_${idx}`}>
+                        <div className="reply_item" key={reply.stdyComCommentId}>
                             {
-                                (reply.userIdx === user.userIdx) &&
+                                (reply.rgsnUserId === user.userId) &&
                                 (
                                     reply.isEdit ?
                                         <div className={"edit_btn_group"}>
-                                            <button onClick={() => handleChangeMode(reply.idx)}>취소</button>
-                                            <button>수정완료</button>
+                                            <button onClick={() => handleChangeMode(reply.stdyComCommentId)}>취소</button>
+                                            {/*<button onClick={() => handleApplyReply}>수정완료</button>*/}
                                         </div>:
                                         <div className={"edit_btn_group"}>
-                                            <button onClick={() => handleChangeMode(reply.idx)}>수정</button>
-                                            <button>삭제</button>
+                                            <button onClick={() => handleChangeMode(reply.stdyComCommentId)}>수정</button>
+                                            <button onClick={() => handleDelete(reply.stdyComCommentId)}>삭제</button>
                                         </div>
                                 )
                             }
-                            <p className="writer">{reply.userName}</p>
+                            <p className="writer">{reply.rgsnUserId}</p>
                             {
                                 reply.isEdit ?
                                     <>
                                         <div className="content">
                                             <ReplyForm
-                                                handleRegister={handleApplyReReply}
-                                                value={reply.content}
+                                                handleRegister={handleApplyReply}
+                                                value={reply.stdyComCommentCon}
                                                 type={"edit"}
+                                                targetId={reply.stdyComCommentId}
                                             />
                                         </div>
                                     </>:
                                     <>
-                                        <p className="date">{reply.createDate}</p>
+                                        <p className="date">{dayjs(reply.rgsnTs).format("YYYY-MM-DD HH:mm")}</p>
                                         <div className="content">
-                                            { reply.content }
+                                            { reply.stdyComCommentCon }
                                         </div>
                                     </>
                             }
                             {
                                 !reply.isEdit &&
                                 <ReplyForm
-                                    handleRegister={handleApplyReReply}
+                                    handleRegister={handleApplyReply}
                                     type={"reReply"}
-                                    isMine={user?.userIdx?.toString() === reply?.userIdx?.toString()}
+                                    isMine={reply?.amnnUserId === user?.userId}
+                                    parentCommId={reply.stdyComCommentId}
                                 />
                             }
-                            {/*대댓글*/}
+                            {/*대댓글 start*/}
                             {
-                                reply.reReplyList?.map(reRe => (
-                                    <div className="re_reply_item" key={`re_reply_${idx}`}>
+                                reply?.stdyChildComCommentList?.map(reRe => (
+                                    <div className="re_reply_item" key={reRe.stdyComCommentId}>
                                         <div className="top_wrap">
-                                            <p className="writer">{reRe.userName}</p>
+                                            <p className="writer">{reRe.rgsnUserId}</p>
                                             {
-                                                (user?.userIdx === reRe.userIdx) &&
+                                                (user?.userId === reRe.rgsnUserId) &&
                                                 (
-                                                    (reRe.isEdit) ?
+                                                    (reRe?.isEdit) ?
                                                     <div className={"top_button_group"}>
-                                                        <button onClick={() => handleChangeReplyMode(reply.idx, reRe.idx)}>취소</button>
-                                                        <button>수정완료</button>
+                                                        <button onClick={() => handleChangeReplyMode(reply.stdyComCommentId, reRe.stdyComCommentId)}>취소</button>
+                                                        {/*<button>수정완료</button>*/}
                                                     </div> :
                                                     <div className={"top_button_group"}>
-                                                        <button onClick={() => handleChangeReplyMode(reply.idx, reRe.idx)}>수정</button>
-                                                        <button>삭제</button>
+                                                        <button onClick={() => handleChangeReplyMode(reply.stdyComCommentId, reRe.stdyComCommentId)}>수정</button>
+                                                        <button onClick={() => handleDelete(reRe.stdyComCommentId)}>삭제</button>
                                                     </div>
                                                 )
                                             }
@@ -97,21 +106,22 @@ const Reply = ({data, user, handleChangeMode, handleChangeReplyMode}) => {
                                             reRe?.isEdit ?
                                                 <div className="content">
                                                     <ReplyForm
-                                                        handleRegister={handleApplyReReply}
-                                                        value={reRe.content}
+                                                        handleRegister={handleApplyReply}
+                                                        value={reRe.stdyComCommentCon}
                                                         type={"edit"}
                                                     />
                                                 </div> :
                                                 <>
-                                                    <p className="date">{reRe.createDate}</p>
+                                                    <p className="date">{dayjs(reRe.rgsnTs).format("YYYY-MM-DD HH:mm")}</p>
                                                     <div className="content">
-                                                        { reRe.content }
+                                                        { reRe.stdyComCommentCon }
                                                     </div>
                                                 </>
                                         }
                                     </div>
                                 ))
                             }
+                            {/*대댓글 end*/}
                         </div>
                     ))
                 }
@@ -123,7 +133,14 @@ const Reply = ({data, user, handleChangeMode, handleChangeReplyMode}) => {
 
 // @INFO
 // type : reReply(대댓글) || edit(수정모드)
-const ReplyForm = ({handleRegister, type="", value=null, isMine=false}) => {
+const ReplyForm = (props) => {
+    const {
+        handleRegister,
+        type="",
+        value=null,
+        isMine=false,
+        parentCommId=null // 있으면 대댓글, 없으면 댓글
+    } = props;
 
     const [text, setText] = useState("");
     const [replyStatus, setReplyStatus] = useState(false);
@@ -150,7 +167,12 @@ const ReplyForm = ({handleRegister, type="", value=null, isMine=false}) => {
                         className={"textarea"}
                         placeholder={"댓글을 등록해보세요"}
                     />
-                    { type !== "edit" && <button className={"button"} onClick={() => handleRegister(text)}>댓글등록</button> }
+                    { type !== "edit" &&
+                        <button className={"button "} onClick={() => {
+                            handleRegister(text, parentCommId);
+                            setText("");
+                            if(replyStatus) setReplyStatus(false);
+                        }}>댓글등록</button>}
                 </div>
             }
             {/*대댓글*/}

@@ -38,8 +38,16 @@ const Detail = () => {
     }
 
     // 스터디신청하기 핸들러
-    const handleApply = () => {
-        console.log("신청하기 핸들러")
+    const handleApply = async () => {
+        Axios.post(`/member/add`, {
+            stdyId: id
+        })
+        .then(function (response) {
+            handleGetDetail()
+        })
+        .catch(function (error) {
+            console.log("error", error);
+        })
     }
 
     // 수정모드
@@ -175,7 +183,7 @@ const Detail = () => {
                     <section className={"apply_section"}>
                         {
                             (user?.userId) ?
-                            (contentData?.participants?.filter(item => item.userId === user.userId)?.length > 0) ?
+                            (contentData?.memberList?.filter(item => item.userId === user?.userId)?.length > 0) ?
                                 <>
                                     <p className={"main_text"}>신청된 스터디입니다. 😉</p>
                                     <p>커뮤니티를 통해 다양한 커뮤니케이션 활동을 해보세요!</p>
@@ -193,11 +201,8 @@ const Detail = () => {
                                         onClick={() => setIsConfirmModal({
                                             status: true,
                                             message: "해당 스터디를 신청하시겠습니까?",
-                                            handleConfirm: () => {},
-                                            handleCancel: () => {
-                                                console.log("cancel !!!")
-                                                setIsConfirmModal(MODAL_INFO)
-                                            }
+                                            handleConfirm: () => handleApply(),
+                                            handleCancel: () => setIsConfirmModal(MODAL_INFO)
                                         })}
                                     >
                                         신청하기

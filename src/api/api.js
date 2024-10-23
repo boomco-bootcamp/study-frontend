@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {useLocation, useNavigate} from "react-router-dom";
 
 // Axios 인스턴스 생성
 const Axios = axios.create({
@@ -30,6 +31,23 @@ Axios.interceptors.request.use(
         localStorage.removeItem('userInfo')
         return Promise.reject(error);
 
+    }
+);
+
+Axios.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response && error.response.status === 400) {
+            const allowUrls = ["/", "/login", "/signup", "findPw", "study/detail"];
+            if (!allowUrls.includes(window.location.pathname)) {
+                if(!window.location.pathname.startsWith("/study")) {
+                    window.location.href = "/";
+                }
+            }
+        }
+        return Promise.reject(error);
     }
 );
 
