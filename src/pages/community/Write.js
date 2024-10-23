@@ -5,21 +5,35 @@ import {COMMUNITY_TYPE} from "../../util/const";
 import FileUpload from "../../components/common/FileUpload";
 import {communityList} from "../../data/community";
 import {useUser} from "../../context/UserContext";
+import Axios from "../../api/api";
+import { useLocation } from 'react-router-dom';
 
 const Write = () => {
 
     const navigate = useNavigate();
     const {user} = useUser();
     const {commId} = useParams();
+    const location = useLocation();
+    const { stdyId } = location?.state || {};
+
 
     const [form, setForm] = useState({
-        id: null,
-        isReply: false, // 댓글승인여부
-        postType: "joinMessage", // 게시글 유형
-        title: "",
-        content: "",
-        fileList: []
+        stdyId : stdyId, // 스터디 ID
+        stdyComTitle : "", // 스터티 커뮤니티 제목
+        stdyComCon : "", // 스터디 커뮤니티 내용
+        stdyComSt : "inquiry", // 스터디 커뮤니티 상태
+        fileList : [ // 스터디 커뮤니티 첨부파일 리스트
+            // {
+            //     "fileId" : "3356c4dc-f05b-4d96-88ef-7aae938e1111"
+            // }
+        ]
     });
+    // 에러 체크
+    const [errorList, setErrorList] = useState({
+        stdyComTitle: "",
+        stdyComCon: ""
+    });
+
     const [files, setFiles] = useState([]);
 
     // @INFO 수정일때 기존 데이터 set
@@ -38,12 +52,47 @@ const Write = () => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
-        })
+        });
+
+        if(e.target.value !== "") {
+            setErrorList({
+                ...errorList,
+                [e.target.name]: ""
+            });
+        }
     }
     // 파일업로드 취소
     const handleCancel = (index) => {
         const newData = files.filter((_, idx) => idx !== index);
         setFiles(newData);
+    }
+
+    // 유효성 체크
+    const handleCheckValidate = (data) => {
+        const checkObj = {}
+        if(form.stdyComTitle === "") checkObj.stdyComTitle = "빈값을 입력하세요";
+        if(form.stdyComCon === "") checkObj.stdyComCon = "빈값을 입력하세요";
+        setErrorList(checkObj);
+        return Object.keys(checkObj)?.length <= 0;
+    }
+
+    // 글 등록
+    const handleSubmit = async () => {
+        const postData = {
+            ...form
+        }
+
+        if(handleCheckValidate(postData)) {
+            await Axios.post(`/community/save`, postData)
+                .then(() => {
+                    navigate(`/community/${stdyId}`)
+                })
+                .catch(function (error) {
+                    console.log("error", error);
+                })
+        }
+
+
     }
 
     useEffect(() => {
@@ -53,7 +102,8 @@ const Write = () => {
             // 수정
             handleSetData();
         }
-    }, [commId])
+    }, [commId]);
+
 
 
     return (
@@ -62,8 +112,9 @@ const Write = () => {
                 {/*content_section start*/}
                 <section className={"content_section"}>
                     <div className="form_row select_wrap">
-                        <select name={"postType"}  defaultValue={form.postType} onChange={handleChange} className={"select"}>
+                        <select name={"stdyComSt"} defaultValue={form.stdyComSt} onChange={handleChange} className={"select"}>
                             {
+                                // @INFO 관리자만 공지사항을 올릴수 있음
                                 Object.keys(COMMUNITY_TYPE).map((key, index) => (
                                     (user?.type === "admin") ?
                                         <option value={key}>{COMMUNITY_TYPE[`${key}`]}</option> :
@@ -76,20 +127,22 @@ const Write = () => {
                         <input
                             type="text"
                             placeholder={"제목을 입력하세요"}
-                            className={"input"}
-                            name={"title"}
-                            value={form.title}
+                            className={`input ${errorList.stdyComTitle ? "error": ""}`}
+                            name={"stdyComTitle"}
+                            value={form.stdyComTitle}
                             onChange={handleChange}
                         />
+                        {(errorList.stdyComTitle) && <p className="error_notice">{errorList.stdyComTitle}</p>}
                     </div>
                     <div className="form_row content_wrap">
                         <textarea
                             placeholder={"내용을 입력하세요"}
-                            className={"textarea"}
-                            name={"content"}
-                            value={form.content}
+                            className={`textarea ${errorList.stdyComCon ? "error": ""}`}
+                            name={"stdyComCon"}
+                            value={form.stdyComCon}
                             onChange={handleChange}
                         />
+                        {(errorList.stdyComCon) && <p className="error_notice">{errorList.stdyComCon}</p>}
                     </div>
                     <div className="form_row attach_wrap">
                         <FileUpload
@@ -103,7 +156,7 @@ const Write = () => {
                         {
                             commId !== "new" ?
                                 <button className="button linear">수정</button>:
-                                <button className="button linear">등록</button>
+                                <button className="button linear" onClick={handleSubmit}>등록</button>
                         }
                     </div>
                 </section>

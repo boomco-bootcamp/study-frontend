@@ -45,6 +45,21 @@ a {
     min-height: 35px;
 }
 
+.input.error {
+    border-color: #ff0000 !important;
+}
+
+/*textarea*/
+.textarea.error {
+    border-color: #ff0000 !important;
+}
+
+/*error_notice*/
+.error_notice {
+    color: #ff0000;
+    margin-top: 4px;
+}
+
 /*ellipsis*/
 .ellipsis {
     width: 100%;
@@ -90,4 +105,10 @@ a {
 .require:after {
     content: "*";
     color: #ff0000 !important;
+}
+
+/*no_data_wrap*/
+.no_data_wrap {
+    padding: 50px 0;
+    text-align: center;
 }
