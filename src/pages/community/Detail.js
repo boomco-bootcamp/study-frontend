@@ -193,7 +193,7 @@ const Detail = () => {
                                 onClick={() => navigate(`/community/detail/${nextData.id}`, {state: {stdyId: stdyId}})}
                                 disabled={!nextData}
                             >
-                                다음글&nbsp;&nbsp; →
+                                다음글&nbsp;&nbsp;→
                             </button>
                         </div>
                         {
