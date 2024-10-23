@@ -445,6 +445,10 @@
     font-weight: 700;
 }
 
+.detail_page .content_header_wrap .title .type {
+    margin-right: 4px;
+}
+
 .detail_page .content_header_wrap .title .badge {
     margin-right: 10px;
 }

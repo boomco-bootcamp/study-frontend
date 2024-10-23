@@ -12,6 +12,7 @@ const List = () => {
     const navigate = useNavigate();
     const {id} = useParams();
 
+    const [studyData, setStudyData] = useState({}); // 스터디 정보
     const [commDataList, setCommDataList] = useState([]); // 커뮤니티 목록
     const [commTypeList, setCommTypeList] = useState([]); // 커뮤니티 유형 select
 
@@ -45,6 +46,20 @@ const List = () => {
     }
 
     // 커뮤니티 목록 조회
+    const handleGetStudyData = () => {
+        Axios.get(`/study/detail`, {
+            params: {
+                stdyId: id,
+            }
+        })
+        .then(function (response) {
+            setStudyData(response.data);
+        })
+        .catch(function (error) {
+            console.log("error", error);
+        })
+    }
+
     const handleGetList = async () => {
         await Axios.get(`/community/list`, {
             params: {
@@ -83,16 +98,6 @@ const List = () => {
         }
     }
 
-    // 상세커뮤니티 이동
-    const handleDetail = (commIdx) => {
-        // navigate(`/community/detail/${commIdx}`, { state: studyData })
-        navigate(`/community/detail/${commIdx}`, {state: {stdyId: id}})
-    }
-
-    const handleWrite = (commIdx) => {
-        // navigate(`/community/write/${commIdx}`, { state: studyData })
-        navigate(`/community/write/${commIdx}`, {state: {stdyId: id}})
-    }
 
     useEffect(() => {
         // @INFO 커뮤니티 게시글 유형 select 세팅
@@ -107,13 +112,17 @@ const List = () => {
         searchValue && handleGetList()
     }, [searchValue])
 
+    useEffect(() => {
+        id && handleGetStudyData()
+    }, [id])
+
 
     return(
         <Layout>
             <div className="page_wrap community_page">
                 <div className="community_header default_width">
                     {/*<h2 className={"study_title"}>{studyData?.title}</h2>*/}
-                    <h2 className={"study_title"}>백엔드 공부 모집</h2>
+                    <h2 className={"study_title"}>{studyData?.stdyNm ?? "-"}</h2>
                     <button className={"button"} onClick={() => navigate(`/community/write/new`, {state: {stdyId: id}})}>글쓰기</button>
                 </div>
                 <section className="search_section default_width">

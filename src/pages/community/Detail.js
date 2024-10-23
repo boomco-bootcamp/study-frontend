@@ -171,7 +171,7 @@ const Detail = () => {
                     <section className={"content_section"}>
                         <div className="content_header_wrap">
                             <h3 className={"title"}>
-                                <b>[{COMMUNITY_TYPE[`${data.stdyComSt}`]}]</b>
+                                <b className={"type"}>[{COMMUNITY_TYPE[`${data.stdyComSt}`]}]</b>
                                 { data.stdyComTitle }
                             </h3>
                         </div>
@@ -185,7 +185,7 @@ const Detail = () => {
                             {
                                 (user.userId === data?.rgsnUserId) &&
                                 <div className="right_section">
-                                    <button className="button linear" onClick={() => navigate(`/community/write/${commId}`)}>수정</button>
+                                    <button className="button linear" onClick={() => navigate(`/community/write/${commId}`, {state: {stdyId: stdyId}})}>수정</button>
                                     <button className="button">삭제</button>
                                 </div>
                             }

@@ -21,7 +21,7 @@ const Write = () => {
         stdyId : stdyId, // 스터디 ID
         stdyComTitle : "", // 스터티 커뮤니티 제목
         stdyComCon : "", // 스터디 커뮤니티 내용
-        stdyComSt : "inquiry", // 스터디 커뮤니티 상태
+        stdyComSt : "", // 스터디 커뮤니티 상태
         fileList : [ // 스터디 커뮤니티 첨부파일 리스트
             // {
             //     "fileId" : "3356c4dc-f05b-4d96-88ef-7aae938e1111"
@@ -37,15 +37,20 @@ const Write = () => {
     const [files, setFiles] = useState([]);
 
     // @INFO 수정일때 기존 데이터 set
-    const handleSetData = () => {
-        const targetData = communityList.filter(item => item.id === parseInt(commId))?.[0];
-        setForm({
-            id: commId,
-            postType: targetData?.postType ?? "free",
-            title: targetData?.title ?? "",
-            content: targetData?.content ?? "",
-            fileList: targetData?.fileList
-        })
+    const handleSetData = async () => {
+        await Axios.get(`/community/detail?stdyComtId=${commId}`, )
+            .then(function (response) {
+                const data = response.data;
+                setForm({
+                    stdyId : data.stdyId,
+                    stdyComTitle : data.stdyComTitle,
+                    stdyComCon : data.stdyComCon,
+                    stdyComSt : data.stdyComSt,
+                });
+            })
+            .catch(function (error) {
+                console.log("error", error);
+            })
     }
 
     const handleChange = (e) => {
@@ -78,10 +83,15 @@ const Write = () => {
 
     // 글 등록
     const handleSubmit = async () => {
-        const postData = {
+        let postData = {
             ...form
         }
-
+        if(commId !== "new") {
+            postData = {
+                ...form,
+                stdyComtId: commId
+            }
+        }
         if(handleCheckValidate(postData)) {
             await Axios.post(`/community/save`, postData)
                 .then(() => {
@@ -91,8 +101,6 @@ const Write = () => {
                     console.log("error", error);
                 })
         }
-
-
     }
 
     useEffect(() => {
@@ -112,16 +120,19 @@ const Write = () => {
                 {/*content_section start*/}
                 <section className={"content_section"}>
                     <div className="form_row select_wrap">
-                        <select name={"stdyComSt"} defaultValue={form.stdyComSt} onChange={handleChange} className={"select"}>
-                            {
-                                // @INFO 관리자만 공지사항을 올릴수 있음
-                                Object.keys(COMMUNITY_TYPE).map((key, index) => (
-                                    (user?.type === "admin") ?
-                                        <option value={key}>{COMMUNITY_TYPE[`${key}`]}</option> :
-                                        (key !== "notice") && <option value={key}>{COMMUNITY_TYPE[`${key}`]}</option>
-                                ))
-                            }
-                        </select>
+                        {
+                            form &&
+                            <select name={"stdyComSt"} value={form?.stdyComSt ?? "inquiry"} onChange={handleChange} className={"select"}>
+                                {
+                                    // @INFO 관리자만 공지사항을 올릴수 있음
+                                    Object.keys(COMMUNITY_TYPE).map((key, index) => (
+                                        (user?.type === "admin") ?
+                                            <option value={key}>{COMMUNITY_TYPE[`${key}`]}</option> :
+                                            (key !== "notice") && <option value={key}>{COMMUNITY_TYPE[`${key}`]}</option>
+                                    ))
+                                }
+                            </select>
+                        }
                     </div>
                     <div className="form_row input_wrap">
                         <input
@@ -155,7 +166,7 @@ const Write = () => {
                         <button className="button" onClick={() => navigate(-1)}>취소</button>
                         {
                             commId !== "new" ?
-                                <button className="button linear">수정</button>:
+                                <button className="button linear" onClick={handleSubmit}>수정</button>:
                                 <button className="button linear" onClick={handleSubmit}>등록</button>
                         }
                     </div>
