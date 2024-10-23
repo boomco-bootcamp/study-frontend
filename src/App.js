@@ -6,6 +6,8 @@ import {UserProvider} from "./context/UserContext";
 //     return contexts.reduce((prev, context) => React.createElement(context, { children: prev }), children)
 // }
 
+console.log("test")
+
 function App() {
   return (
       <UserProvider>
