@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
 import {DeleteIcon, PlusIcon} from "../../assets/icons/Icon";
-import {likeTagList} from "../../data/mypage";
 
 const ChipBox = (props) => {
     const {

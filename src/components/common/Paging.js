@@ -18,7 +18,6 @@ const Paging = (props) => {
 
     useEffect(() => {
         pagingData && getFullPage();
-        pagingData && console.log("pagingData -> ", pagingData);
     }, [pagingData])
 
     if (pagingData) {

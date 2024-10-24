@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useUser} from "../../context/UserContext";
 
-// data
-import {hotTagList} from "../../data/study";
 // components
 import Layout from "../../components/layout/Layout";
 import Banner from "./components/Banner";
@@ -17,15 +15,13 @@ import Axios from '../../api/api'
 const Main = () => {
     const {user} = useUser();
 
-    const [studyList, setStudyList] = useState([]);
+    const [recentList, setRecentList] = useState([]); // 최신 스터디 목록
+    const [hotList, setHotList] = useState([]); // 인기 스터디 목록
+    const [favList, setFavList] = useState([]); // 관심 스터디 목록
+
     const [tagList, setTagList] = useState([]);
 
-    const [recentList, setRecentList] = useState([]);
-    const [hotList, setHotList] = useState([]);
-    const [categoryList, setCategoryList] = useState([]);
-
-    const temp_user_category = ["프론트엔드", "모바일 앱 개발"]; // 임시 데이터 "프론트엔드", "모바일 앱 개발"
-
+    // 스터디 목록 조회
     const handleGetStudyData = async (orderType, setFunction) => {
             return await Axios.get(`/study/list`, {
                 params: {
@@ -45,6 +41,9 @@ const Main = () => {
             })
     }
 
+
+
+
     const getTagList = async () => {
             Axios.get(`/tag/list/favorite`)
             .then(function (response) {
@@ -59,14 +58,20 @@ const Main = () => {
             })
     }
 
+    // 관심 스터디 목록 조회
     const getlikeStudyList = async () => {
-        await Axios.get('/my/like/list')
-            .then(function (res) {
-                setStudyList(res.data.list)
-            })
-            .catch(function (err) {
-                console.error("err", err)
-            })
+        await Axios.get('/my/like/list', {
+            params: {
+                page: 1,
+                record: 4
+            }
+        })
+        .then(function (res) {
+            setFavList(res.data.list)
+        })
+        .catch(function (err) {
+            console.error("err", err)
+        })
     }
 
     useEffect(() => {
@@ -76,16 +81,7 @@ const Main = () => {
         getlikeStudyList();
     }, [])
 
-    useEffect( () => {
-        Axios.get(`/my/category/list`)
-            .then(function (response) {
-                setCategoryList(response.data.list)
-                }
-            )
-            .catch(function (error) {
-                console.log("error", error);
-            })
-    }, [user])
+
 
     return (
         <Layout>
@@ -137,18 +133,16 @@ const Main = () => {
 
                     <section className="recommend_box">
                         {
-                            (user.userNm) ?
+                            (user?.name) ?
                                 <div className={"recommend_list"}>
                                     {
-                                        (studyList?.length > 0) ?
+                                        (favList?.length > 0) ?
                                             <>
                                                 <p className="notice">
-                                                    ✨ {user.userNm}님이 관심있어하는 스터디예요 👀
-                                                    {/*({temp_user_category?.map((category, idx) => <span key={`user_category_${idx}`}>#{category}</span>)})*/}
+                                                    ✨ {user.name}님이 관심있어하는 스터디예요 👀
                                                 </p>
                                                 {
-                                                    studyList.map((item, idx) => (
-                                                        (idx < 4) &&
+                                                    favList.map((item, idx) => (
                                                         <StudyItem
                                                             key={idx}
                                                             data={item}

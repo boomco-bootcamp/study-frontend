@@ -5,7 +5,6 @@ import {BellIcon} from "../../assets/icons/Icon";
 
 const Header = ({ user, handleLogout }) => {
     const navigate = useNavigate();
-
     const {keyword} = useParams();
 
     const [alarmPopup, setAlarmPopup] = useState(false);
@@ -52,7 +51,7 @@ const Header = ({ user, handleLogout }) => {
                                     LOGOUT
                                 </button>
                                 {
-                                    (user?.sysAdmYn === "Y") ?
+                                    (user?.type === "Y") ?
                                     <>
                                         <button className="button" onClick={() => navigate("/admin")}>관리자페이지</button>
                                         <button className={`button_alarm ${alarmPopup ? "active": ""}`} onClick={() => setAlarmPopup(!alarmPopup)}>

@@ -201,6 +201,8 @@
     cursor: pointer;
 }
 
+
+
 .study_item .title {
     transition: 0.3s ease-in;
     line-height: 1.3;
@@ -465,8 +467,17 @@
     transition: 0.3s ease-in;
 }
 
-.detail_page .content_header_wrap .like:hover {
+.detail_page .content_header_wrap .like.active {
     background: #000;
+    color: #eee;
+}
+.detail_page .content_header_wrap .like.active:hover {
+    background: rgba(0,0,0,0.8);
+    color: #eee;
+}
+
+.detail_page .content_header_wrap .like:hover {
+    background: rgba(0,0,0,0.4);
     color: #eee;
 }
 

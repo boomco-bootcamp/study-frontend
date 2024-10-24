@@ -9,6 +9,7 @@ import Modal from "../../components/common/Modal";
 import {PlusIcon} from "../../assets/icons/Icon";
 import Axios from "../../api/api";
 import {MODAL_INFO} from "../../util/const";
+import Paging from "../../components/common/Paging";
 
 const Main = () => {
     const navigate = useNavigate();
@@ -20,6 +21,16 @@ const Main = () => {
     const [categoryDataList, setCategoryDataList] = useState([]);
     // 스터디 데이터
     const [studyList, setStudyList] = useState([]);
+    const [paging, setPaging] = useState({
+        endPage: 10,
+        next: true,
+        page: 1,
+        prev: false,
+        record: 5,
+        startPage: 1,
+        total: 2,
+        totalPage: 20
+    })
     // 팝업
     const [applyModal, setApplyModal] = useState({
         status: false,
@@ -34,7 +45,8 @@ const Main = () => {
     }
 
     const handleApplyConfirm = () => {
-
+        // @todo 현재 가입신청하면 바로 가입되서 중간단계 논의후 추가 개발 필요
+        console.log("가입 승인 ")
     }
 
     const customListHeader = () => {
@@ -47,11 +59,26 @@ const Main = () => {
     }
 
     // study list
-    const handleGetList = async () => {
+    const handleGetList = async (paging=null) => {
         // 추후 검색 api 호출
-        Axios.get(`/study/list`)
+        Axios.get(`/study/list`, {
+            params: {
+                page: paging ?? paging?.page ?? 1,
+            }
+        })
             .then(function (response) {
-                setStudyList(response.data.list);
+                const data = response.data;
+                setStudyList(data.list);
+                setPaging({
+                    endPage: data.endPage,
+                    next: data.next,
+                    page: data.page,
+                    prev: data.prev,
+                    record: data.record,
+                    startPage: data.startPage,
+                    total: data.total,
+                    totalPage: data.totalPage
+                })
             })
             .catch(function (error) {
                 console.log("error", error);
@@ -59,7 +86,14 @@ const Main = () => {
 
     }
 
-    const handleDelete = (id) => {
+    const handlePaging = async (param) => {
+        if(paging.page !== param.page) {
+            await handleGetList(param.page);
+        }
+    }
+
+
+    const handleDelete = async (id) => {
         Axios.post(`/study/delete`, {stdyId: id})
             .then(function (response) {
                 handleGetList();
@@ -88,19 +122,17 @@ const Main = () => {
         Axios.post(`/category/save`, {
             stdyCatNm: data
         })
-            .then( (response)  => {
-                handleGetCategory();
-            })
-            .catch(function (error) {
-                console.log("error", error);
-            })
+        .then( (response)  => {
+            handleGetCategory();
+        })
+        .catch(function (error) {
+            console.log("error", error);
+        })
     }
     const handleDeleteCategory = (id) => {
+        //@ TODO 관련된 스터디를 어떻게 할지 논의후 추가개발 필요
         console.log("handleDeleteCategory -> ", id);
     }
-
-
-
 
     useEffect(() => {
         handleGetCategory();
@@ -170,6 +202,7 @@ const Main = () => {
                                 ))
                             }
                         </ListSection>
+                        <Paging pagingData={paging} handlePaging={handlePaging} />
                     </section>
                 </section>
             </div>

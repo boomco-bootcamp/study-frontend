@@ -18,7 +18,7 @@ const StudyItem = ({data}) => {
                     <b>[{data?.stdyCatNm}]</b>{ data?.stdyNm }
                 </p>
                 <Badge
-                    className={data.status}
+                    className={data.stdySt}
                     text={STATUS_DATA[`${data.stdySt}`]}
                 />
             </div>

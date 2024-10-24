@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Layout from "../../components/layout/Layout";
-// import {likeCategoryList, likeTagList, appliedStudyList, likeStudyList} from "../../data/mypage";
 import ListSection from "../../components/common/ListSection";
 import StudyItem from "../../components/study/StudyItem";
 import {
@@ -12,12 +11,10 @@ import {
 } from '../../api/mypage';
 import {deleteStudyLike} from '../../api/like'
 import { getAllCategoryList } from '../../api/category'
-import Badge from "../../components/common/Badge";
 import {useNavigate} from "react-router-dom";
 import {useUser} from "../../context/UserContext";
 import ChipBox from "../../components/common/ChipBox";
 import Modal from "../../components/common/Modal";
-import {PlusIcon} from "../../assets/icons/Icon";
 
 const Main = () => {
 
@@ -43,15 +40,18 @@ const Main = () => {
     const [categoryModal, setCategoryModal] = useState(false);
     const [tagModal, setTagModal] = useState(false);
 
+
+    // 관심 스터디
+    const addCategory = async (param) => {
+        await saveLikeCategory({ stdyCatId : param });
+    }
+
     const deleteLike = async (param) => {
         await deleteStudyLike({stdyId : param})
         setLikeStudyList((await getLikeStudyList()).data.list)
     }
 
-    const addCategory = async (param) => {
-        await saveLikeCategory({ stdyCatId : param });
-    }
-
+    // 관심 태그설정
     const addTag = async (param) => {
         await addMyTag({stdyLikeTagCon : param});
         setLikeTagList((await getLikeTagList()).data);
@@ -62,6 +62,7 @@ const Main = () => {
         setLikeTagList((await getLikeTagList()).data);
     }
 
+    // 관심 카테고리 설정
     const handleCheckCategory = (e, item) => {
         addCategory(item.stdyCatId)
         categorySaveRef.current = true
@@ -122,12 +123,12 @@ const Main = () => {
         <Layout>
             <div className="page_wrap my_page default_width">
                 <div className="welcome_message">
-                    <p className="text"><b className="name">{user.userNm}</b>님 환영합니다!🤩</p>
+                    <p className="text"><b className="name">{user.name}</b>님 환영합니다!🤩</p>
                     <button className={"btn_account"} onClick={() => navigate("/account")}>계정정보 수정</button>
                 </div>
                 {/*신청한스터디목록*/}
                 <section className="apply_study_section">
-                    <ListSection title={"가입 스터디 현황"} link={"/study"}>
+                    <ListSection title={"가입 스터디 현황"}>
                         {
                             appliedStudyData.length > 0 ?
                                 appliedStudyData.map((item, idx) => (
@@ -190,7 +191,7 @@ const Main = () => {
 
                 {/*관심스터디목록*/}
                 <section className={"like_study_section"}>
-                    <ListSection title={"관심 스터디 현황"} link={"/study"}>
+                    <ListSection title={"관심 스터디 현황"}>
                         {
                             likeStudyData?.length > 0 ?
                                 likeStudyData.map((item, idx) => (

@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Layout from "../../components/layout/Layout";
 import {useNavigate, useParams} from "react-router-dom";
-import {studyList, studyReplyList} from "../../data/study";
 import Reply from "../../components/common/Reply";
 import {useUser} from "../../context/UserContext";
 import Badge from "../../components/common/Badge";
@@ -14,11 +13,13 @@ const Detail = () => {
 
     const navigate = useNavigate();
 
-    const {user} = useUser();
+
+    const {user, getUserInfo} = useUser();
     const {id} = useParams();
 
     const [contentData, setContentData] = useState({});
     const [replyData, setReplyData] = useState({});
+    const [likeStudy, setLikeStudy] = useState("N"); // 관심목록에 등록된 스터디 Y | N
 
     const [isConfirmModal, setIsConfirmModal] = useState(MODAL_INFO);
 
@@ -36,6 +37,8 @@ const Detail = () => {
             console.log("error", error);
         })
     }
+
+
 
     // 스터디신청하기 핸들러
     const handleApply = async () => {
@@ -63,31 +66,94 @@ const Detail = () => {
         });
     }
 
+    // 관심 스터디
+    // 사용자 등록된 관심 스터디
+    const getlikeStudyList = async () => {
+        await Axios.get('/my/like/list', {
+            params: {
+                page: 1,
+                record: 100
+            }
+        })
+        .then(function (res) {
+            const currentStudyLike = res.data.list?.filter(item => item.stdyId === id);
+            setLikeStudy(currentStudyLike);
+        })
+        .catch(function (err) {
+            console.error("err", err)
+        })
+    }
+
+    const handleLikeAuth = () => {
+        if(!user || !user.loginStatus) {
+            const userInfo = localStorage.getItem("user");
+            if(userInfo) {
+                return true;
+            } else {
+                alert("로그인 후 이용이 가능합니다.");
+                return false
+            }
+        } else {
+            return true;
+        }
+    }
+    const handleLike = () => {
+        if(handleLikeAuth()) {
+            if(likeStudy?.length > 0) {
+                // 관심해제
+                Axios.post(`/like/delete`, {
+                    stdyId: id
+                })
+                .then(function (response) {
+                    handleGetDetail();
+                    getlikeStudyList();
+                })
+                .catch(function (error) {
+                    console.log("error", error);
+                });
+            } else {
+                // 관심등록
+                Axios.post(`/like/add`, {
+                    stdyId: id
+                })
+                .then(function (response) {
+                    handleGetDetail();
+                    getlikeStudyList();
+                })
+                .catch(function (error) {
+                    console.log("error", error);
+                });
+            }
+        }
+
+    }
+
     //@INFO 내용 세팅
     useEffect(() => {
-        if(id) handleGetDetail();
+        if(id) {
+            handleGetDetail();
+            getlikeStudyList();
+        }
     }, [id])
 
     //@INFO reply 내용 가져요기
-    useEffect(() => {
-        if(studyReplyList && id) {
-            const replyData = studyReplyList.filter(item => item.id === parseInt(id));
-            if(replyData?.length > 0) {
-                const newData = replyData[0]?.replyList?.map(item => ({
-                    ...item,
-                    isEdit: false
-                }))
-                setReplyData({
-                    ...replyData[0],
-                    replyList: newData
-                });
-            } else {
-                setReplyData([]);
-            }
-        }
-    }, [studyReplyList, id])
-
-
+    // useEffect(() => {
+    //     if(studyReplyList && id) {
+    //         const replyData = studyReplyList.filter(item => item.id === parseInt(id));
+    //         if(replyData?.length > 0) {
+    //             const newData = replyData[0]?.replyList?.map(item => ({
+    //                 ...item,
+    //                 isEdit: false
+    //             }))
+    //             setReplyData({
+    //                 ...replyData[0],
+    //                 replyList: newData
+    //             });
+    //         } else {
+    //             setReplyData([]);
+    //         }
+    //     }
+    // }, [studyReplyList, id])
 
     return (
         <Layout>
@@ -104,7 +170,9 @@ const Detail = () => {
                                 />
                                 { contentData?.stdyNm }
                             </h3>
-                            <button className="like">♡ {contentData?.stdyLikeCnt ?? 0}</button>
+                            <button className={`like ${likeStudy?.length > 0 ? "active": ""}`} onClick={handleLike}>
+                                ♡ {contentData?.stdyLikeCnt ?? 0}
+                            </button>
                         </div>
                         <div className="info_wrap">
                             <p className="writer">{contentData?.rgsnUserNm ?? "글쓴이"}</p>
@@ -137,7 +205,7 @@ const Detail = () => {
                                 }
                                 {
                                     contentData?.memberList?.map((item, idx) => (
-                                        <span className={"participant"}>{item.userName}</span>
+                                        <span className={"participant"}>{item.amnnUserId}</span>
                                     ))
                                 }
                             </div>
@@ -177,36 +245,43 @@ const Detail = () => {
                     {/*apply_section start*/}
                     <section className={"apply_section"}>
                         {
-                            (user?.userId) ?
-                            (contentData?.memberList?.filter(item => item.userId === user?.userId)?.length > 0) ?
-                                <>
-                                    <p className={"main_text"}>신청된 스터디입니다. 😉</p>
-                                    <p>커뮤니티를 통해 다양한 커뮤니케이션 활동을 해보세요!</p>
-                                    <button
-                                        className={"button"}
-                                        onClick={() => navigate(`/community/${id}`)}
-                                    >
-                                        커뮤니티로 이동 →
-                                    </button>
-                                </> :
-                                <>
-                                    <p>스터디를 신청하여 갓생러가 되어보세요~!</p>
-                                    <button
-                                        className={"button linear"}
-                                        onClick={() => setIsConfirmModal({
-                                            status: true,
-                                            message: "해당 스터디를 신청하시겠습니까?",
-                                            handleConfirm: () => handleApply(),
-                                            handleCancel: () => setIsConfirmModal(MODAL_INFO)
-                                        })}
-                                    >
-                                        신청하기
-                                    </button>
-                                </>:
-                                <>
-                                    <p>로그인을 통해 스터디 서비스를 사용해보세요</p>
-                                    <button className={"button"} onClick={() => navigate("/login")}>LOGIN</button>
-                                </>
+                            (user?.userId) &&
+                            (user?.userId !== contentData?.rgsnUserId) &&
+                                (
+                                    (contentData?.memberList?.filter(item => item.userId === user?.userId)?.length > 0) ?
+                                        <>
+                                            <p className={"main_text"}>신청된 스터디입니다. 😉</p>
+                                            <p>커뮤니티를 통해 다양한 커뮤니케이션 활동을 해보세요!</p>
+                                            <button
+                                                className={"button"}
+                                                onClick={() => navigate(`/community/${id}`)}
+                                            >
+                                                커뮤니티로 이동 →
+                                            </button>
+                                        </> :
+                                        <>
+                                            <p>스터디를 신청하여 갓생러가 되어보세요~!</p>
+                                            <button
+                                                className={"button linear"}
+                                                onClick={() => setIsConfirmModal({
+                                                    status: true,
+                                                    message: "해당 스터디를 신청하시겠습니까?",
+                                                    handleConfirm: () => handleApply(),
+                                                    handleCancel: () => setIsConfirmModal(MODAL_INFO)
+                                                })}
+                                            >
+                                                신청하기
+                                            </button>
+                                        </>
+                                )
+                        }
+
+                        {
+                            (!user || !user.userId) &&
+                            <>
+                                <p>로그인을 통해 스터디 서비스를 사용해보세요</p>
+                                <button className={"button"} onClick={() => navigate("/login")}>LOGIN</button>
+                            </>
                         }
                     </section>
                     {/*apply_section end*/}

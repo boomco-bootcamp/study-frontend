@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import Axios from "../api/api";
 
 const initialUserState = {
     name: null,
     userId: null,
+    userIdx: null,
     loginStatus: false,
+    type: "N"
 };
 
 const UserContext = createContext();
@@ -27,7 +30,9 @@ export const UserProvider = ({ children }) => {
     const logout = () => {
         setUser(initialUserState);
         localStorage.removeItem('user');
+        localStorage.removeItem("authToken");
     };
+
 
     const value = {
         user,

@@ -2,9 +2,6 @@ import React, {useEffect, useState} from 'react';
 import Layout from "../../components/layout/Layout";
 import Search from "../../components/common/Search";
 
-// data
-// import {categoryList, hotTagList, studyList} from "../../data/study";
-// const
 import {STATUS_DATA} from "../../util/const";
 import StudyItem from "../../components/study/StudyItem";
 import Paging from "../../components/common/Paging";
@@ -19,10 +16,11 @@ const List = () => {
 
     const [categoryDataList, setCategoryDataList] = useState([]);
     const [searchValue, setSearchValue] = useState({
-        category: "all",
-        input: "",
-        status: "all", // all + STATUS_DATA
+        stdyCatId: "all", // 카테고리
+        searchCon: "", // 검색어
+        orderType: "all", // filter
         page: 1,
+        record: 10
     });
     const [studyDataList, setStudyDataList] = useState([]);
     const [hotTagDataList, setHotTagDataList] = useState([]);
@@ -41,8 +39,8 @@ const List = () => {
     const handleSearch = (input, select) => {
         setSearchValue({
             ...searchValue,
-            input: input,
-            category: select
+            searchCon: input,
+            stdyCatId: select
         })
     }
 
@@ -64,10 +62,11 @@ const List = () => {
         // 추후 검색 api 호출
         Axios.get(`/study/list`, {
                 params: {
-                    searchCon: searchValue?.input ?? "",
+                    searchCon: searchValue?.searchCon ?? "",
                     orderType: "desc",
                     page: searchValue.page,
-                    record: 10
+                    record: searchValue.record,
+                    stdyCatId: searchValue?.stdyCatId === "all" ? "": searchValue.stdyCatId,
                 }
             })
             .then(function (response) {
@@ -174,7 +173,7 @@ const List = () => {
                         <div className="list_tag_wrap">
                             <div className="list_wrap">
                                 {
-                                    (studyDataList?.length <= 0 && searchValue.input) &&
+                                    (studyDataList?.length <= 0 && searchValue.searchCon) &&
                                     <div className={"no_result"}>
                                         검색결과가 없습니다.
                                     </div>

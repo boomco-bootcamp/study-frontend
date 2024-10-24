@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {format} from "date-fns";
 import Layout from "../../components/layout/Layout";
 import {useNavigate, useParams} from "react-router-dom";
-// import {categoryList, studyList} from "../../data/study";
 import ChipBox from "../../components/common/ChipBox";
 import Calendar from "../../components/common/Calendar";
 import Axios from "../../api/api";
@@ -91,15 +90,37 @@ const Write = () => {
             stdyEnDt: format(form.stdyEnDt, "yyyy-MM-dd mm:ss"),
             tagList: tagLists
         }
+
+        let message = "";
+        if(postData.stdyNm === "") {
+            message = "스터디명을 입력하세요"
+        } else if(postData.stdyCon === "") {
+            message = "스터디 소개글을 입력하세요";
+        }  else if(postData.tagList?.length <= 0) {
+            message = "태그를 입력하세요";
+        }
+
+        if(message) {
+            setIsConfirmModal({
+                title: "",
+                status: true,
+                message: message,
+                handleConfirm: () => setIsConfirmModal(MODAL_INFO)
+            });
+            return false;
+        }
+
         if(form.stdyId) {
             postData = {
                 ...postData,
                 stdyId: form.stdyId
             }
         }
+
         Axios.post(`/study/save`, postData)
             .then(function (response) {
                 setIsConfirmModal({
+                    title: "스터디 등록",
                     status: true,
                     message: `${form.stdyId ? "수정": "등록"}이 완료되었습니다.`,
                     handleConfirm: () => navigate('/admin'),
@@ -116,7 +137,6 @@ const Write = () => {
             [e.target.name]: e.target.value
         })
     }
-
 
     // tag handler
     const handleAddTagList = (data) => {
@@ -221,7 +241,7 @@ const Write = () => {
             {
                 isConfirmModal.status &&
                 <Modal
-                    title={"스터디 등록"}
+                    title={isConfirmModal.title}
                     buttonList={[
                         { text: "확인", handleClick: isConfirmModal.handleConfirm, className: "confirm" }
                     ]}

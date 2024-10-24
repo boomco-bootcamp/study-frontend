@@ -3,7 +3,6 @@ import Layout from "../../components/layout/Layout";
 import {useNavigate, useParams} from "react-router-dom";
 import {COMMUNITY_TYPE} from "../../util/const";
 import FileUpload from "../../components/common/FileUpload";
-import {communityList} from "../../data/community";
 import {useUser} from "../../context/UserContext";
 import Axios from "../../api/api";
 import { useLocation } from 'react-router-dom';

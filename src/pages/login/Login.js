@@ -24,7 +24,13 @@ const Login = () => {
         Axios.post(`/user/info`)
         .then(function (response) {
             const userInfo = response.data;
-            login(userInfo);
+            login({
+                name: userInfo?.userNm,
+                userId: userInfo?.userId,
+                loginStatus: true,
+                type: userInfo?.sysAdmYn,
+                email: userInfo?.userEml
+            });
             window.location.href = '/'
         })
         .catch(function (error) {
@@ -67,7 +73,7 @@ const Login = () => {
                         id='id'
                         name='id'
                         onChange={handleChangeInput}
-                        onKeyPress={e => e.key === "Enter" && handleClickLogin}
+                        onKeyPress={e => e.key === "Enter" && handleClickLogin()}
                         value={formData.id}
                         placeholder='ID'
                         className='form_input'
@@ -80,7 +86,7 @@ const Login = () => {
                         id='pw'
                         name='pw'
                         onChange={handleChangeInput}
-                        onKeyPress={e => e.key === "Enter" && handleClickLogin}
+                        onKeyPress={e => e.key === "Enter" && handleClickLogin()}
                         value={formData.pw}
                         placeholder='Password'
                         className='form_input'
