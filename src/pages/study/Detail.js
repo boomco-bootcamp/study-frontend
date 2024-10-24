@@ -43,7 +43,8 @@ const Detail = () => {
             stdyId: id
         })
         .then(function (response) {
-            handleGetDetail()
+            handleGetDetail();
+            setIsConfirmModal(MODAL_INFO);
         })
         .catch(function (error) {
             console.log("error", error);
@@ -62,15 +63,9 @@ const Detail = () => {
         });
     }
 
-
     //@INFO 내용 세팅
     useEffect(() => {
-        if(id) {
-            // console.log("Detail -> ", id)
-            // const targetData = studyList.filter(item => item.id === parseInt(id));
-            // if(targetData?.length > 0) setContentData(targetData[0]);
-            handleGetDetail()
-        }
+        if(id) handleGetDetail();
     }, [id])
 
     //@INFO reply 내용 가져요기

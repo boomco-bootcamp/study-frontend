@@ -3,7 +3,7 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import Logo from '../../assets/images/logo.png';
 import {BellIcon} from "../../assets/icons/Icon";
 
-const Header = ({ user, handleLogin, handleLogout }) => {
+const Header = ({ user, handleLogout }) => {
     const navigate = useNavigate();
 
     const {keyword} = useParams();
@@ -52,9 +52,9 @@ const Header = ({ user, handleLogin, handleLogout }) => {
                                     LOGOUT
                                 </button>
                                 {
-                                    (user?.type === "admin") ?
+                                    (user?.sysAdmYn === "Y") ?
                                     <>
-                                        <button className="button" onClick={() => navigate("/admin")}>adminpage</button>
+                                        <button className="button" onClick={() => navigate("/admin")}>관리자페이지</button>
                                         <button className={`button_alarm ${alarmPopup ? "active": ""}`} onClick={() => setAlarmPopup(!alarmPopup)}>
                                             <BellIcon/>
                                         </button>

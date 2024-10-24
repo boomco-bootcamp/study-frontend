@@ -2,32 +2,34 @@ import React, {useEffect, useState} from 'react';
 import {useUser} from "../../context/UserContext";
 import Layout from "../../components/layout/Layout";
 import ChipBox from "../../components/common/ChipBox";
-import {categoryList} from "../../data/study";
-import {adminStudyList} from "../../data/mypage";
 import StudyItem from "../../components/study/StudyItem";
 import ListSection from "../../components/common/ListSection";
 import {useNavigate, Link} from "react-router-dom";
 import Modal from "../../components/common/Modal";
 import {PlusIcon} from "../../assets/icons/Icon";
 import Axios from "../../api/api";
+import {MODAL_INFO} from "../../util/const";
 
 const Main = () => {
     const navigate = useNavigate();
     const { user } = useUser();
 
+    // 공통
+    const [isModal, setIsModal] = useState(MODAL_INFO);
+    // 카테고리 데이터
     const [categoryDataList, setCategoryDataList] = useState([]);
-    const [adminStudyData, setAdminStudyData] = useState([]);
+    // 스터디 데이터
+    const [studyList, setStudyList] = useState([]);
     // 팝업
     const [applyModal, setApplyModal] = useState({
         status: false,
         data: null
     });
 
-    const handleApplyModal = (data) => {
-        console.log("data -> ", data);
+    const handleApplyModal = () => {
         setApplyModal({
             status: !applyModal.status,
-            data: data
+            data: []
         });
     }
 
@@ -44,9 +46,32 @@ const Main = () => {
         )
     }
 
+    // study list
+    const handleGetList = async () => {
+        // 추후 검색 api 호출
+        Axios.get(`/study/list`)
+            .then(function (response) {
+                setStudyList(response.data.list);
+            })
+            .catch(function (error) {
+                console.log("error", error);
+            })
+
+    }
+
+    const handleDelete = (id) => {
+        Axios.post(`/study/delete`, {stdyId: id})
+            .then(function (response) {
+                handleGetList();
+                setIsModal(MODAL_INFO);
+            })
+            .catch(function (error) {
+                console.log("error", error);
+            })
+    }
+
     // category
     const handleGetCategory = async () => {
-        // 추후 검색 api 호출
         Axios.get(`/category/list/all`)
             .then(function (response) {
                 const categorySelect = response.data.map((cat, index) => ({
@@ -75,10 +100,11 @@ const Main = () => {
     }
 
 
+
+
     useEffect(() => {
         handleGetCategory();
-        // (categoryList) &&setCategoryData(categoryList);
-        (adminStudyList) && setAdminStudyData(adminStudyList);
+        handleGetList();
     }, [])
 
     return (
@@ -108,25 +134,33 @@ const Main = () => {
                             customHeader={customListHeader}
                         >
                             {
-                                adminStudyList?.map((item, idx) => (
-                                    <div className="apply_study_item" key={idx}>
+                                studyList?.map((item, idx) => (
+                                    <div className="apply_study_item" key={item.stdyId}>
                                         <StudyItem data={item} />
                                         <div className="button_list">
-                                            <button className={"button linear"} onClick={() => handleApplyModal(item.applyParticipants)}>
-                                                승인대기 {
-                                                    item?.applyParticipants?.filter(item => !item.applyStatus)?.length ?? 0
-                                                }명
+                                            <button className={"button linear"} onClick={handleApplyModal}>
+                                                승인대기
+                                                {item?.applyParticipants?.filter(item => !item.applyStatus)?.length ?? 0}
+                                                명
                                             </button>
                                            <div className="button_group">
                                                <button
-                                                   onClick={() => navigate(`/study/write/${item.id}`)}
                                                    className={"button linear"}
+                                                   onClick={() => navigate(`/study/write/${item.stdyId}`)}
                                                >
                                                    수정
                                                </button>
                                                <button
-                                                   onClick={() => console.log("스터디 삭제")}
                                                    className={"button"}
+                                                   // onClick={() => handleDelete(item.stdyId)}
+                                                   onClick={() => setIsModal({
+                                                       status: true,
+                                                       message: "해당 스터디를 삭제하시겠습니까?",
+                                                       buttonList: [
+                                                           { text: "취소", handleClick: () => setIsModal(MODAL_INFO), className: "cancel" },
+                                                           { text: "확인", handleClick: () => handleDelete(item.stdyId), className: "confirm" }
+                                                       ],
+                                                   })}
                                                >
                                                    삭제
                                                </button>
@@ -142,7 +176,7 @@ const Main = () => {
             {
                 (applyModal.status) &&
                 <Modal
-                    title={"관심 카테고리 설정"}
+                    title={"스터디 가입 현황"}
                     buttonList={[
                         { text: "취소", handleClick: () => setApplyModal({...applyModal, status: false}), className: "cancel" },
                         { text: "확인", handleClick: () => handleApplyConfirm(), className: "confirm" }
@@ -178,6 +212,20 @@ const Main = () => {
                     </div>
                 </Modal>
             }
+
+            {
+                isModal.status &&
+                <Modal
+                    title={""}
+                    buttonList={isModal?.buttonList}
+                    handleClose={isModal?.handleCancel}
+                    className={"confirm_modal"}>
+                    <div className="modal_message">
+                        { isModal?.message }
+                    </div>
+                </Modal>
+            }
+
         </Layout>
     );
 };

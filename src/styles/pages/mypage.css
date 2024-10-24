@@ -157,6 +157,10 @@
     border-bottom: 0 none;
 }
 
+.admin_page .study_setting_wrap .study_item {
+    border-bottom: 1px solid #dcdcdc;
+}
+
 .admin_page .study_setting_wrap .button_list {
     display: flex;
     flex-direction: column;
